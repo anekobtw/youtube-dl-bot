@@ -27,7 +27,7 @@ async def faq(message: types.Message) -> None:
         "По причине того, что у меня нет финансирования, я использую бесплатные хостинги, и бот может быть иногда офлайн. Обо всем я буду оповещать в телеграм канале бота - @free_yt_dl_channel\n\n"
         "<b>Бот не сохраняет никаких данных о Вас.</b> Поэтому доступ к тому, что Вы скачиваете есть только у Вас.\n\n"
         '(ссылки на "buy me coffee" не будет)',
-    )
+        )
 
 
 @router.message(F.text, Command("usage"))
@@ -37,7 +37,7 @@ async def usage(message: types.Message) -> None:
         "<b>Вариант 1. Ссылкой</b>\n"
         "Отправь боту ссылку, которая начинается с https://www.youtube.com/watch?v= или https://youtu.be/, и бот вернет информацию о видео с кнопками для скачивания.\n\n"
         "<b>Вариант 2. Поиском</b>\n"
-        "Отправь боту обычное сообщение и он вернет список видео с таким запросом. После, нажми на название видео, которое хочешь скачать и бот вернет информацию о видео с кнопками для скачивания."
+        "Отправь боту обычное сообщение и он вернет список видео с таким запросом. После, нажми на название видео, которое хочешь скачать и бот вернет информацию о видео с кнопками для скачивания.\n\n"
         "<b>Вариант 3. Голосовым сообщением (только на русском)</b>\n"
         "Запиши голосовое сообщение (желательно говорить внятно и без постороннего шума) с названием видео и бот список видео с таким запросом. После, нажми на название видео, которое хочешь скачать и бот вернет информацию о видео с кнопками для скачивания."
     )
@@ -49,9 +49,11 @@ async def message_handler(message: types.Message) -> None:
     url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/"]
 
     if any(message.text.startswith(prefix) for prefix in url_prefixes):
-        await message.answer(text=funcs.get_video_info(message.text), reply_markup=get_dl_kb(message.text))
+        await message.answer(text=funcs.get_video_info(message.text),
+                             reply_markup=get_dl_kb(message.text))
     else:
-        results = youtubesearchpython.VideosSearch(query=message.text, limit=10)
+        results = youtubesearchpython.VideosSearch(query=message.text,
+                                                   limit=10)
         await message.answer(
             text=f"Видео по запросу <b>{message.text}</b>",
             reply_markup=get_results_kb(results),
@@ -68,7 +70,8 @@ async def voice_handler(message: types.Message) -> None:
     query = funcs.Transcryptor().transcrypt(file_path=filename)
     await message.answer(
         text=f"Видео по запросу <b>{query}</b>",
-        reply_markup=get_results_kb(youtubesearchpython.VideosSearch(query=query, limit=10)),
+        reply_markup=get_results_kb(
+            youtubesearchpython.VideosSearch(query=query, limit=10)),
     )
 
     os.remove(filename)

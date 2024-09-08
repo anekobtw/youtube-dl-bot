@@ -58,12 +58,7 @@ class Transcryptor:
 
 def get_video_info(url: str) -> str:
     video = youtubesearchpython.Video.getInfo(url)
-    return (
-        f"<b>Автор:</b> {video['channel']['name']}\n"
-        f"<b>Название:</b> {video['title']}\n"
-        f"<b>Просмотры:</b> {video['viewCount']['text']}\n\n"
-        f"<b>Ссылка:</b> {video['link']}"
-    )
+    return f"<b>Автор:</b> {video['channel']['name']}\n" f"<b>Название:</b> {video['title']}\n" f"<b>Просмотры:</b> {video['viewCount']['text']}\n\n" f"<b>Ссылка:</b> {video['link']}"
 
 
 def shorten_url(url: str) -> str:
