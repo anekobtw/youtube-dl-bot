@@ -3,11 +3,11 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher
-from aiogram.client.bot import DefaultBotProperties
+from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-from handlers.common import router
+from handlers import router
 
 
 async def run_bot():

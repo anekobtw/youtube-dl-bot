@@ -1,7 +1,5 @@
-aiogram==3.12.0
+aiogram==3.13.1
 python-dotenv==1.0.1
 Requests==2.32.3
-vosk==0.3.45
-youthon==0.4.2
-youtube_search_python==1.6.6
-yt_dlp==2024.8.6
+youthon==0.4.3
+yt_dlp==2024.10.22
