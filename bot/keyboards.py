@@ -1,21 +1,19 @@
+"""
+Keyboards
+"""
+
 from aiogram import types
 from youtubesearchpython import VideosSearch
 
 
 def get_results_kb(results: VideosSearch) -> types.InlineKeyboardMarkup:
-    buttons = [
-        [
-            types.InlineKeyboardButton(
-                text=result.get("title"),
-                callback_data=f"https://www.youtube.com/watch?v={result.get('id')}",
-            )
-        ]
-        for result in results.resultComponents
-    ]
+    """Returns a keyboard with the first 10 videos"""
+    buttons = [[types.InlineKeyboardButton(text=f"{result.get('duration')} | {result.get('title')}", callback_data=f"https://www.youtube.com/watch?v={result.get('id')}")] for result in results.resultComponents]
     return types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def get_dl_kb(video_url: str) -> types.InlineKeyboardMarkup:
+def get_options_keyboard(video_url: str) -> types.InlineKeyboardMarkup:
+    """Returns a keyboard with options what to do with the video"""
     buttons = [
         [types.InlineKeyboardButton(text="🎵 Скачать аудио", callback_data=f"audiodl_{video_url}")],
         [types.InlineKeyboardButton(text="🖼 Скачать превью", callback_data=f"thumbnaildl_{video_url}")],

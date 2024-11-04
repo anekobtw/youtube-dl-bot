@@ -1,3 +1,7 @@
+"""
+All the basic commands
+"""
+
 import os
 
 import youtubesearchpython
@@ -5,8 +9,8 @@ from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
-import handlers.funcs as funcs
-from keyboards import get_dl_kb, get_results_kb
+from keyboards import get_options_keyboard, get_results_kb
+from handlers import funcs
 
 router = Router()
 load_dotenv()
@@ -15,11 +19,13 @@ bot = Bot(os.getenv("TOKEN"))
 
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
+    """The first command"""
     await message.answer(text="Напиши название видео для поиска или вставь ссылку.\n\nО боте - /about\nКак пользоваться ботом - /usage")
 
 
 @router.message(F.text, Command("about"))
-async def faq(message: types.Message) -> None:
+async def about(message: types.Message) -> None:
+    """Sending basic info about the bot"""
     await message.answer(
         "Привет! На связи anekobtw. Быстро пройдемся по пунктам.\n\n"
         "Этот бот - мой польностью <b>сольный проект</b>, что означает, что только я выбираю вектор развития, а также проект не зависит ни от кого, кроме меня.\n\n"
@@ -32,6 +38,7 @@ async def faq(message: types.Message) -> None:
 
 @router.message(F.text, Command("usage"))
 async def usage(message: types.Message) -> None:
+    """Sending info how to use the bot"""
     await message.answer(
         "<b>Как скачать видео/песню с ютуба</b>\n\n"
         "<b>Вариант 1. Ссылкой</b>\n"
@@ -43,14 +50,12 @@ async def usage(message: types.Message) -> None:
 
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
+    """Handling all text messages"""
     await message.delete()
     url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/"]
 
     if any(message.text.startswith(prefix) for prefix in url_prefixes):
-        await message.answer(text=funcs.get_video_info(message.text), reply_markup=get_dl_kb(message.text))
+        await message.answer(text=funcs.get_video_info(message.text), reply_markup=get_options_keyboard(message.text))
     else:
         results = youtubesearchpython.VideosSearch(query=message.text, limit=10)
-        await message.answer(
-            text=f"Видео по запросу <b>{message.text}</b>",
-            reply_markup=get_results_kb(results),
-        )
+        await message.answer(text=f"Видео по запросу <b>{message.text}</b>", reply_markup=get_results_kb(results))
