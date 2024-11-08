@@ -6,6 +6,7 @@ import os
 
 import youthon
 import youtubesearchpython
+import yt_dlp
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
@@ -43,7 +44,7 @@ async def usage(message: types.Message) -> None:
     await message.answer(
         "<b>Как скачать видео/песню с ютуба</b>\n\n"
         "<b>Вариант 1. Ссылкой</b>\n"
-        "Отправь боту ссылку, которая начинается с https://www.youtube.com/watch?v= или https://youtu.be/, и бот вернет информацию о видео с кнопками для скачивания.\n\n"
+        "Отправь боту ссылку, которая начинается с https://www.youtube.com/watch?v= или https://youtu.be/, и бот вернет информацию о видео с кнопками для скачивания.\n\nПри отправке ссылки, которая начинается с https://x.com/ или https://twitter.com/, бот сразу отправит видео"
         "<b>Вариант 2. Поиском</b>\n"
         "Отправь боту обычное сообщение и он вернет список видео с таким запросом. После, нажми на название видео, которое хочешь скачать и бот вернет информацию о видео с кнопками для скачивания."
     )
@@ -53,11 +54,16 @@ async def usage(message: types.Message) -> None:
 async def message_handler(message: types.Message) -> None:
     """Handling all text messages"""
     await message.delete()
-    url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"]
+    youtube_url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"]
+    x_url_prefixes = ["https://x.com/", "https://twitter.com/"]
 
-    if any(message.text.startswith(prefix) for prefix in url_prefixes):
+    if any(message.text.startswith(prefix) for prefix in youtube_url_prefixes):
         url = youthon.Video(message.text).video_url
         await message.answer(text=funcs.get_video_info(url), reply_markup=get_options_keyboard(url))
+    elif any(message.text.startswith(prefix) for prefix in x_url_prefixes):
+        funcs.download_x_video(message.text, f"xvideo - {message.from_user.id}.mp4")
+        await message.answer_video(video=types.FSInputFile(f"xvideo - {message.from_user.id}.mp4"), caption="<b>@free_yt_dl_bot</b>")
+        os.remove(f"xvideo - {message.from_user.id}.mp4")
     else:
         results = youtubesearchpython.VideosSearch(query=message.text, limit=10)
         await message.answer(text=f"Видео по запросу <b>{message.text}</b>", reply_markup=get_results_kb(results))
