@@ -4,13 +4,14 @@ All the basic commands
 
 import os
 
+import youthon
 import youtubesearchpython
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
-from keyboards import get_options_keyboard, get_results_kb
 from handlers import funcs
+from keyboards import get_options_keyboard, get_results_kb
 
 router = Router()
 load_dotenv()
@@ -52,10 +53,11 @@ async def usage(message: types.Message) -> None:
 async def message_handler(message: types.Message) -> None:
     """Handling all text messages"""
     await message.delete()
-    url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/"]
+    url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"]
 
     if any(message.text.startswith(prefix) for prefix in url_prefixes):
-        await message.answer(text=funcs.get_video_info(message.text), reply_markup=get_options_keyboard(message.text))
+        url = youthon.Video(message.text).video_url
+        await message.answer(text=funcs.get_video_info(url), reply_markup=get_options_keyboard(url))
     else:
         results = youtubesearchpython.VideosSearch(query=message.text, limit=10)
         await message.answer(text=f"Видео по запросу <b>{message.text}</b>", reply_markup=get_results_kb(results))
