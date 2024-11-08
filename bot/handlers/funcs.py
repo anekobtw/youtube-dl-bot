@@ -19,7 +19,7 @@ def get_video_info(url: str) -> str:
 def download_video_best(url: str, output_path: str) -> None:
     """Downloading a YouTube shorts video at the best quality possible"""
     if youthon.Video(url).length_seconds > 60:
-        raise Exception("Скачивание доступно только для shorts видео.")
+        raise Exception("Скачивание доступно только для видео типа shorts.")
 
     with yt_dlp.YoutubeDL({"format": "bestvideo", "outtmpl": "video.mp4", "quiet": True}) as yt:
         yt.download([url])
@@ -29,7 +29,7 @@ def download_video_best(url: str, output_path: str) -> None:
     if not is_shorts("video.mp4"):
         os.remove("video.mp4")
         os.remove("audio.mp3")
-        raise Exception("Скачивание доступно только для shorts видео.")
+        raise Exception("Скачивание доступно только для видео типа shorts.")
 
     ffmpeg.output(ffmpeg.input("video.mp4"), ffmpeg.input("audio.mp3"), output_path, vcodec="copy", acodec="copy").run()
     os.remove("video.mp4")
