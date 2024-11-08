@@ -7,7 +7,7 @@ import os
 import ffmpeg
 import youthon
 import yt_dlp
-from moviepy.editor import VideoFileClip
+from videoprops import get_video_properties
 
 
 def get_video_info(url: str) -> str:
@@ -38,4 +38,6 @@ def download_video_best(url: str, output_path: str) -> None:
 
 def is_shorts(video_path: str) -> bool:
     """Checking whether a video is horizontal or vertical"""
-    return VideoFileClip(video_path).size[0] < VideoFileClip(video_path).size[1]
+    props = get_video_properties(video_path)
+    return props['width'] < props['height']
+    # return VideoFileClip(video_path).size[0] < VideoFileClip(video_path).size[1]

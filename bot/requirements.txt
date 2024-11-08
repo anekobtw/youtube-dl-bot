@@ -1,7 +1,7 @@
 aiogram==3.14.0
 ffmpeg_python==0.2.0
+get_video_properties==0.1.1
 python-dotenv==1.0.1
-Requests==2.32.3
 youthon==0.4.3
 youtube_search_python==1.6.6
 yt_dlp==2024.11.4
