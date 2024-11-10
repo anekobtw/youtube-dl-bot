@@ -4,15 +4,12 @@ All the basic commands
 
 import os
 
-import youthon
-import youtubesearchpython
-import yt_dlp
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
 from handlers import funcs
-from keyboards import get_options_keyboard, get_results_kb
+from keyboards import get_options_keyboard
 
 router = Router()
 load_dotenv()
@@ -43,10 +40,7 @@ async def usage(message: types.Message) -> None:
     """Sending info how to use the bot"""
     await message.answer(
         "<b>Как скачать видео/песню с ютуба</b>\n\n"
-        "<b>Вариант 1. Ссылкой</b>\n"
         "Отправь боту ссылку на ютуб видео, и бот вернет информацию о видео с кнопками для скачивания.\nПри отправке ссылки с твиттера (X), бот сразу отправит видео\n\n"
-        "<b>Вариант 2. Поиском</b>\n"
-        "Отправь боту обычное сообщение и он вернет список видео с таким запросом. После, нажми на название видео, которое хочешь скачать и бот вернет информацию о видео с кнопками для скачивания."
     )
 
 
@@ -58,12 +52,10 @@ async def message_handler(message: types.Message) -> None:
     x_url_prefixes = ["https://x.com/", "https://twitter.com/"]
 
     if any(message.text.startswith(prefix) for prefix in youtube_url_prefixes):
-        url = youthon.Video(message.text).video_url
-        await message.answer(text=funcs.get_video_info(url), reply_markup=get_options_keyboard(url))
+        await message.answer(text=message.text, reply_markup=get_options_keyboard(message.text))
     elif any(message.text.startswith(prefix) for prefix in x_url_prefixes):
         funcs.download_x_video(message.text, f"xvideo - {message.from_user.id}.mp4")
         await message.answer_video(video=types.FSInputFile(f"xvideo - {message.from_user.id}.mp4"), caption="<b>@free_yt_dl_bot</b>")
         os.remove(f"xvideo - {message.from_user.id}.mp4")
     else:
-        results = youtubesearchpython.VideosSearch(query=message.text, limit=10)
-        await message.answer(text=f"Видео по запросу <b>{message.text}</b>", reply_markup=get_results_kb(results))
+        await message.answer(text="/supported_links")

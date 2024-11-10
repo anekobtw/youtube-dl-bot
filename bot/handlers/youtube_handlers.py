@@ -8,8 +8,7 @@ import yt_dlp
 from aiogram import F, Router, types
 from youthon import Video
 
-from handlers.funcs import download_video_best, get_video_info
-from keyboards import get_options_keyboard
+from handlers.funcs import download_video_best
 
 router = Router()
 
@@ -18,12 +17,6 @@ router = Router()
 async def delete_message(callback: types.CallbackQuery):
     """Deleting orginial message"""
     await callback.message.delete()
-
-
-@router.callback_query(F.data.startswith("https://www.youtube.com/watch?v="))
-async def process_video(callback: types.CallbackQuery):
-    """Sending a message with options"""
-    await callback.message.edit_text(text=get_video_info(callback.data), reply_markup=get_options_keyboard(callback.data))
 
 
 @router.callback_query(F.data.startswith("audiodl_"))
