@@ -9,7 +9,6 @@ from aiogram.filters import Command
 from dotenv import load_dotenv
 
 from handlers import funcs
-from keyboards import get_options_keyboard
 
 router = Router()
 load_dotenv()
@@ -18,44 +17,61 @@ bot = Bot(os.getenv("TOKEN"))
 
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
-    """The first command"""
-    await message.answer(text="Напиши название видео для поиска или вставь ссылку.\n\nО боте - /about\nКак пользоваться ботом - /usage")
+    """Start command"""
+    await message.answer(text="Отправь боту ссылку на видео.\nПоддерживаемые ссылки - /supported_links\n\n<b>Мы не собираем никаких данных о Вас!</b>")
 
 
-@router.message(F.text, Command("about"))
-async def about(message: types.Message) -> None:
-    """Sending basic info about the bot"""
-    await message.answer(
-        "Привет! На связи anekobtw. Быстро пройдемся по пунктам.\n\n"
-        "Этот бот - мой польностью <b>сольный проект</b>, что означает, что только я выбираю вектор развития, а также проект не зависит ни от кого, кроме меня.\n\n"
-        "Бот <b>абсолютно бесплатный</b>, и в нем нет и никогда не будет рекламы. Помимо этого, Вы не увидите никаких платных подписок. Проект был создан не с целью заработка, а с целью предоставить людям <b>лучший сервис для скачивания видео и аудио</b>.\n\n"
-        "По причине того, что у меня нет финансирования, я использую бесплатные хостинги, и бот может быть иногда офлайн.\n\n"
-        "<b>Бот не сохраняет никаких данных о Вас.</b> Поэтому доступ к тому, что Вы скачиваете есть только у Вас.\n\n"
-        '(ссылки на "buy me coffee" не будет)',
-        )
-
-
-@router.message(F.text, Command("usage"))
+@router.message(F.text, Command("supported_links"))
 async def usage(message: types.Message) -> None:
-    """Sending info how to use the bot"""
+    """Sending a message with all the supported links."""
     await message.answer(
-        "<b>Как скачать видео/песню с ютуба</b>\n\n"
-        "Отправь боту ссылку на ютуб видео, и бот вернет информацию о видео с кнопками для скачивания.\nПри отправке ссылки с твиттера (X), бот сразу отправит видео\n\n"
+        """
+<b>YouTube</b>
+https://www.youtube.com/watch?v=
+https://youtu.be/
+https://www.youtube.com/shorts/
+https://youtube.com/shorts/
+
+<b>X (Twitter)</b>
+https://x.com/
+https://twitter.com/
+
+<b>TikTok</b>
+https://www.tiktok.com/
+https://vt.tiktok.com/
+
+<b>Pinterest</b>
+https://www.pinterest.com/pin/
+https://in.pinterest.com/pin/
+"""
     )
 
 
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
-    """Handling all text messages"""
+    """Handles all text messages by detecting the platform and responding accordingly."""
     await message.delete()
-    youtube_url_prefixes = ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"]
-    x_url_prefixes = ["https://x.com/", "https://twitter.com/"]
+    uid = message.from_user.id
+    platform = funcs.detect_platform(message.text)
 
-    if any(message.text.startswith(prefix) for prefix in youtube_url_prefixes):
-        await message.answer(text=message.text, reply_markup=get_options_keyboard(message.text))
-    elif any(message.text.startswith(prefix) for prefix in x_url_prefixes):
-        funcs.download_x_video(message.text, f"xvideo - {message.from_user.id}.mp4")
-        await message.answer_video(video=types.FSInputFile(f"xvideo - {message.from_user.id}.mp4"), caption="<b>@free_yt_dl_bot</b>")
-        os.remove(f"xvideo - {message.from_user.id}.mp4")
+    platform_cfgs = {"youtube": (funcs.download_yt_video, f"ytvideo - {uid}.mp4", message.answer_video), "x": (funcs.download_x_video, f"xvideo - {uid}.mp4", message.answer_video), "tiktok": (funcs.download_tiktok_video, f"ttvideo - {uid}.mp4", message.answer_video), "pinterest": (funcs.download_pinterest_image, f"pinimage - {uid}.png", message.answer_photo)}
+
+    if platform in platform_cfgs:
+        download_func, fname, send_media = platform_cfgs[platform]
+
+        try:
+            if platform == "tiktok":
+                fname = download_func(message.text)  # TikTok returns filename directly
+            else:
+                download_func(message.text, fname)
+
+            file_input = types.FSInputFile(fname)
+            await send_media(file_input, caption="<b>@free_yt_dl_bot</b>")
+
+        except Exception as e:
+            await message.answer(f"Произошла ошибка: {e}")
+
+        finally:
+            os.remove(fname)
     else:
-        await message.answer(text="/supported_links")
+        await message.answer(text="Данная ссылка не поддерживается.\nПоддерживаемые ссылки - /supported_links")
