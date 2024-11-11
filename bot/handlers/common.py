@@ -60,17 +60,11 @@ async def message_handler(message: types.Message) -> None:
         download_func, fname, send_media = platform_cfgs[platform]
 
         try:
-            if platform == "tiktok":
-                fname = download_func(message.text)  # TikTok returns filename directly
-            else:
-                download_func(message.text, fname)
-
+            download_func(message.text, fname)
             file_input = types.FSInputFile(fname)
             await send_media(file_input, caption="<b>@free_yt_dl_bot</b>")
-
         except Exception as e:
             await message.answer(f"Произошла ошибка: {e}")
-
         finally:
             os.remove(fname)
     else:

@@ -7,7 +7,6 @@ from typing import Literal
 
 import bs4
 import ffmpeg
-import pyktok
 import requests
 import youthon
 import yt_dlp
@@ -49,13 +48,20 @@ def download_x_video(url: str, filename: str) -> None:
             file.write(data)
 
 
-def download_tiktok_video(url: str) -> str:
+def download_tiktok_video(url: str, filename: str) -> str:
     """Saves a tiktok video and returns its filename"""
-    pyktok.save_tiktok(url, True, "", "chrome")
-    for file in os.listdir():
-        if file.endswith(".mp4"):
-            return file
-    return ""
+    ydl_opts = {
+        'outtmpl': filename,
+        'format': 'best',
+        'noplaylist': True,
+        'quiet': False,
+        'extractor_args': {'tiktok': {'webpage_download': True}},
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
 
 
 def download_pinterest_image(url: str, filename: str) -> None:

@@ -2,7 +2,6 @@ aiogram==3.14.0
 beautifulsoup4==4.11.1
 ffmpeg_python==0.2.0
 get_video_properties==0.1.1
-pyktok==0.0.30
 python-dotenv==1.0.1
 Requests==2.32.3
 youthon==0.4.3
