@@ -50,13 +50,13 @@ https://in.pinterest.com/pin/
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
     """Handles all text messages by detecting the platform and responding accordingly."""
-    await message.delete()
     uid = message.from_user.id
     platform = funcs.detect_platform(message.text)
 
     platform_cfgs = {"youtube": (funcs.download_yt_video, f"ytvideo - {uid}.mp4", message.answer_video), "x": (funcs.download_x_video, f"xvideo - {uid}.mp4", message.answer_video), "tiktok": (funcs.download_tiktok_video, f"ttvideo - {uid}.mp4", message.answer_video), "pinterest": (funcs.download_pinterest_image, f"pinimage - {uid}.png", message.answer_photo)}
 
     if platform in platform_cfgs:
+		await message.delete()
         download_func, fname, send_media = platform_cfgs[platform]
 
         try:
