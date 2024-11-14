@@ -56,7 +56,7 @@ async def message_handler(message: types.Message) -> None:
     platform_cfgs = {"youtube": (funcs.download_yt_video, f"ytvideo - {uid}.mp4", message.answer_video), "x": (funcs.download_x_video, f"xvideo - {uid}.mp4", message.answer_video), "tiktok": (funcs.download_tiktok_video, f"ttvideo - {uid}.mp4", message.answer_video), "pinterest": (funcs.download_pinterest_image, f"pinimage - {uid}.png", message.answer_photo)}
 
     if platform in platform_cfgs:
-		await message.delete()
+        await message.delete()
         download_func, fname, send_media = platform_cfgs[platform]
 
         try:
