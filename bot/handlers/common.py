@@ -1,7 +1,3 @@
-"""
-All the basic commands
-"""
-
 import os
 
 from aiogram import Bot, F, Router, types
@@ -32,6 +28,10 @@ https://youtu.be/
 https://www.youtube.com/shorts/
 https://youtube.com/shorts/
 
+<b>Instagram</b>
+https://www.instagram.com/reel/
+https://instagram.com/reel/
+
 <b>X (Twitter)</b>
 https://x.com/
 https://twitter.com/
@@ -53,7 +53,13 @@ async def message_handler(message: types.Message) -> None:
     uid = message.from_user.id
     platform = funcs.detect_platform(message.text)
 
-    platform_cfgs = {"youtube": (funcs.download_yt_video, f"ytvideo - {uid}.mp4", message.answer_video), "x": (funcs.download_x_video, f"xvideo - {uid}.mp4", message.answer_video), "tiktok": (funcs.download_tiktok_video, f"ttvideo - {uid}.mp4", message.answer_video), "pinterest": (funcs.download_pinterest_image, f"pinimage - {uid}.png", message.answer_photo)}
+    platform_cfgs = {
+        "youtube": (funcs.download_yt_video, f"ytvideo - {uid}.mp4", message.answer_video),
+        "instagram": (funcs.download_instagram_reel, f"instareel - {uid}.mp4", message.answer_video),
+        "x": (funcs.download_x_video, f"xvideo - {uid}.mp4", message.answer_video),
+        "tiktok": (funcs.download_tiktok_video, f"ttvideo - {uid}.mp4", message.answer_video),
+        "pinterest": (funcs.download_pinterest_image, f"pinimage - {uid}.png", message.answer_photo),
+    }
 
     if platform in platform_cfgs:
         await message.delete()

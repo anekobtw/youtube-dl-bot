@@ -1,7 +1,3 @@
-"""
-Bot's entrypoint
-"""
-
 import asyncio
 import logging
 import os
