@@ -3,7 +3,7 @@
 ![licence](https://img.shields.io/badge/License-MIT-green)
 ![made with love](https://img.shields.io/badge/Made_with-Love-red)
 
-A telegram bot for downloading YouTube music.
+A telegram bot for downloading videos from YouTube, Instagram, TikTok, X (Twitter) and Pinterest
 
 ## Run Locally
 ```bash
