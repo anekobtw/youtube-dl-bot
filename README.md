@@ -5,7 +5,7 @@
 
 A telegram bot for downloading videos from YouTube, Instagram, TikTok, X (Twitter) and Pinterest
 
-Use the bot in telegram: [@free_yt_dl_bot](https://t.me/free_yt_dl_bot)
+Use the bot: [@free_yt_dl_bot](https://t.me/free_yt_dl_bot)
 
 ## Run Locally
 ```bash
