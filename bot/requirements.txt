@@ -1,7 +1,6 @@
-aiogram==3.14.0
+aiogram==3.15.0
 beautifulsoup4==4.12.3
-get_video_properties==0.1.1
 python-dotenv==1.0.1
 Requests==2.32.3
 youthon==0.4.3
-yt_dlp==2024.11.4
+yt_dlp==2024.11.18

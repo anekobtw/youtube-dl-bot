@@ -11,7 +11,6 @@ from handlers import router
 
 
 async def run_bot():
-    """Runs the bot"""
     load_dotenv()
     TOKEN = os.getenv("TOKEN")
 
