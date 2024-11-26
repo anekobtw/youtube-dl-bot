@@ -54,14 +54,19 @@ async def message_handler(message: types.Message) -> None:
     try:
         dl = downloader.Downloader(message.text, str(message.from_user.id))
         filename = dl.filename
-        if filename.endswith(".mp4"):
-            await message.answer_video(video=types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
-        elif filename.endswith(".png"):
-            await message.answer_photo(photo=types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
-        elif filename.endswith(".mp3"):
-            await message.answer_audio(audio=types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
+
+        file_extension_map = {
+            ".mp4": ("video", types.FSInputFile(filename)),
+            ".png": ("photo", types.FSInputFile(filename)),
+            ".mp3": ("audio", types.FSInputFile(filename)),
+        }
+
+        file_type, file_input = file_extension_map.get(os.path.splitext(filename)[-1].lower(), (None, None))
+        await getattr(message, f"answer_{file_type}")(file_input, caption="<b>@free_yt_dl_bot</b>")
+
     except Exception as e:
         await message.answer(str(e))
     else:
         await message.delete()
+    finally:
         os.remove(filename)
