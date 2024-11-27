@@ -3,6 +3,7 @@ import os
 from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from dotenv import load_dotenv
+from time import time
 
 from handlers import downloader
 
@@ -52,7 +53,7 @@ https://pin.it/
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
     try:
-        dl = downloader.Downloader(message.text, str(message.from_user.id))
+        dl = downloader.Downloader(message.text, str(f"{time()}-{message.from_user.id}"))
         filename = dl.filename
 
         file_extension_map = {
