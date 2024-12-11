@@ -1,9 +1,9 @@
 import os
 
-from aiogram import Bot, F, Router, types
+from aiogram import Bot, F, Router, types, methods
 from aiogram.filters import Command
 from dotenv import load_dotenv
-from time import time
+import time
 
 from handlers import downloader
 
@@ -52,22 +52,39 @@ https://pin.it/
 
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
+    msg_text = """
+<b>Platform: {}</b>
+
+Downloading {}
+Sending {}
+    """
+    msg = await message.answer(msg_text.format("🟨", "❌", "❌"))
     try:
-        dl = downloader.Downloader(message.text, str(f"{time()}-{message.from_user.id}"))
-        filename = dl.filename
+        # Initialization
+        dl = downloader.Downloader()
 
-        file_extension_map = {
-            ".mp4": ("video", types.FSInputFile(filename)),
-            ".png": ("photo", types.FSInputFile(filename)),
-            ".mp3": ("audio", types.FSInputFile(filename)),
-        }
+        # Detecting platform
+        platform = dl.detect_platform(message.text)
+        try:
+            assert platform != "unsupported"
+        except AssertionError:
+            raise ValueError("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
+        await msg.edit_text(msg_text.format(platform, "🟨", "❌"))
 
-        file_type, file_input = file_extension_map.get(os.path.splitext(filename)[-1].lower(), (None, None))
-        await getattr(message, f"answer_{file_type}")(file_input, caption="<b>@free_yt_dl_bot</b>")
-
+        # Downloading
+        filename = dl.download(platform, message.text, str(f"{time.time()}-{message.from_user.id}"))
+        file_type = {
+            ".mp4": "video",
+            ".png": "photo",
+            ".mp3": "audio"
+        }.get(filename[-4:])
+        await msg.edit_text(msg_text.format(platform, "✅", "🟨"))
+        await getattr(message, f"answer_{file_type}")(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
+        time.sleep(0.5)  # Rate limits
+        await msg.edit_text(msg_text.format(platform, "✅", "✅"))
     except Exception as e:
-        await message.answer(str(e))
+        await msg.edit_text(str(e))
     else:
         await message.delete()
-    finally:
+        await msg.delete()
         os.remove(filename)

@@ -1,3 +1,5 @@
+# Any changes to this file may negatively impact performance.
+
 import os
 import subprocess
 from typing import Literal
@@ -17,40 +19,31 @@ class Downloader:
         )
     }
     PLATFORM_PREFIXES = {
-        "youtube": ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"],
-        "x": ["https://x.com/", "https://twitter.com/"],
-        "tiktok": ["https://www.tiktok.com/", "https://vt.tiktok.com/"],
-        "instagram": ["https://www.instagram.com/reel/", "https://instagram.com/reel/"],
-        "pinterest": ["https://pin.it/", "https://www.pinterest.com/pin/", "https://in.pinterest.com/pin/"],
-        "spotify": ["https://open.spotify.com/track/"],
+        "YouTube": ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"],
+        "X": ["https://x.com/", "https://twitter.com/"],
+        "TikTok": ["https://www.tiktok.com/", "https://vt.tiktok.com/"],
+        "Instagram": ["https://www.instagram.com/reel/", "https://instagram.com/reel/"],
+        "Pinterest": ["https://pin.it/", "https://www.pinterest.com/pin/", "https://in.pinterest.com/pin/"],
+        "Spotify": ["https://open.spotify.com/track/"],
     }
 
-    def __init__(self, url: str, filename: str) -> None:
-        self.url = url
-        self.filename = filename
-        platform = self.detect_platform(url)
-        if platform == "unsupported":
-            raise ValueError("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
-
-        self.filename = self.download(platform)
-
-    def download(self, platform: str) -> str:
+    def download(self, platform: str, url: str, filename: str) -> str:
         """Download content based on the detected platform."""
-        if platform == "youtube":
-            if youthon.Video(self.url).length_seconds > 60:
+        if platform == "YouTube":
+            if youthon.Video(url).length_seconds > 60:
                 raise ValueError("Скачивание доступно только для видео короче 1 минуты.")
-            return self.download_video(self.url, f"{self.filename}.mp4")
-        elif platform in ["instagram", "tiktok", "x"]:
-            return self.download_video(self.url, f"{self.filename}.mp4", True)
-        elif platform == "pinterest":
-            return self.download_pinterest_image(self.url, f"{self.filename}.png")
-        elif platform == "spotify":
-            return self.download_spotify_track(self.url)
+            return self.download_video(url, f"{filename}.mp4")
+        elif platform in ["Instagram", "TikTok", "X"]:
+            return self.download_video(url, f"{filename}.mp4", True)
+        elif platform == "Pinterest":
+            return self.download_pinterest_image(url, f"{filename}.png")
+        elif platform == "Spotify":
+            return self.download_spotify_track(url)
         else:
             raise ValueError("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
 
     @staticmethod
-    def detect_platform(url: str) -> Literal["youtube", "instagram", "x", "tiktok", "spotify", "unsupported"]:
+    def detect_platform(url: str) -> Literal["YouTube", "Instagram", "X", "TikTok", "Spotify", "unsupported"]:
         """Detects the platform from the URL using prefix matching."""
         for platform, prefixes in Downloader.PLATFORM_PREFIXES.items():
             if any(url.startswith(prefix) for prefix in prefixes):
@@ -76,7 +69,7 @@ class Downloader:
 
     def download_pinterest_image(self, url: str, filename: str) -> str:
         """Download an image from Pinterest."""
-        soup = bs4.BeautifulSoup(requests.get(url, headers=Downloader.HEADERS, timeout=10).content, "html.parser")
+        soup = bs4.BeautifulSoup(requests.get(url, headers=Downloader.HEADERS).content, "html.parser")
         img_url = soup.find("meta", property="og:image")["content"]
         self.download_file(img_url, filename)
         return filename
@@ -93,7 +86,7 @@ class Downloader:
     @staticmethod
     def download_file(url: str, filename: str) -> None:
         """Generic file download helper."""
-        with requests.get(url, stream=True, headers=Downloader.HEADERS, timeout=10) as r:
+        with requests.get(url, stream=True, headers=Downloader.HEADERS) as r:
             r.raise_for_status()
             with open(filename, "wb") as file:
                 for chunk in r.iter_content(1024):
