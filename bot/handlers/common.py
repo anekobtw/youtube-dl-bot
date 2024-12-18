@@ -5,6 +5,8 @@ from aiogram.filters import Command
 from dotenv import load_dotenv
 import time
 
+import yt_dlp
+
 from handlers import downloader
 
 router = Router()
@@ -53,10 +55,10 @@ https://pin.it/
 @router.message(F.text)
 async def message_handler(message: types.Message) -> None:
     msg_text = """
-<b>Platform: {}</b>
+<b>Платформа: {}</b>
 
-Downloading {}
-Sending {}
+Скачивание {}
+Отправка {}
     """
     msg = await message.answer(msg_text.format("🟨", "❌", "❌"))
     try:
@@ -82,8 +84,10 @@ Sending {}
         await getattr(message, f"answer_{file_type}")(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
         time.sleep(0.5)  # Rate limits
         await msg.edit_text(msg_text.format(platform, "✅", "✅"))
-    except Exception as e:
-        await msg.edit_text(str(e))
+    except yt_dlp.utils.DownloadError:
+        await msg.edit_text("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
+    except Exception:
+        await msg.edit_text("Произошла ошибка. Просим сообщить о баге @anekobtw")
     else:
         await message.delete()
         await msg.delete()
