@@ -21,7 +21,7 @@ class Downloader:
     PLATFORM_PREFIXES = {
         "YouTube": ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"],
         "X": ["https://x.com/", "https://twitter.com/"],
-        "TikTok": ["https://www.tiktok.com/", "https://vt.tiktok.com/"],
+        "TikTok": ["https://www.tiktok.com/", "https://vt.tiktok.com/", "https://vm.tiktok.com/"],
         "Instagram": ["https://www.instagram.com/reel/", "https://instagram.com/reel/"],
         "Pinterest": ["https://pin.it/", "https://www.pinterest.com/pin/", "https://in.pinterest.com/pin/"],
         "Spotify": ["https://open.spotify.com/track/"],
