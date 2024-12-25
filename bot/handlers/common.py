@@ -16,7 +16,9 @@ bot = Bot(os.getenv("TOKEN"))
 
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
-    await message.answer(text="Отправь боту ссылку на видео.\nПоддерживаемые ссылки - /supported_links\n\n<b>Мы не собираем никаких данных о Вас!</b>")
+    await message.answer(
+        text="Отправь боту ссылку на видео.\nПоддерживаемые ссылки - /supported_links\n\n<b>Мы не собираем никаких данных о Вас!</b>"
+    )
 
 
 @router.message(F.text, Command("supported_links"))
@@ -75,19 +77,16 @@ async def message_handler(message: types.Message) -> None:
 
         # Downloading
         filename = dl.download(platform, message.text, str(f"{time.time()}-{message.from_user.id}"))
-        file_type = {
-            ".mp4": "video",
-            ".png": "photo",
-            ".mp3": "audio"
-        }.get(filename[-4:])
+        file_type = {".mp4": "video", ".png": "photo", ".mp3": "audio"}.get(filename[-4:])
         await msg.edit_text(msg_text.format(platform, "✅", "🟨"))
         await getattr(message, f"answer_{file_type}")(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
         time.sleep(0.5)  # Rate limits
         await msg.edit_text(msg_text.format(platform, "✅", "✅"))
     except yt_dlp.utils.DownloadError:
         await msg.edit_text("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
-    except Exception:
+    except Exception as e:
         await msg.edit_text("Произошла ошибка. Просим сообщить о баге @anekobtw")
+        print(e)
     else:
         await message.delete()
         await msg.delete()

@@ -5,9 +5,11 @@ import subprocess
 from typing import Literal
 
 import bs4
+from dotenv import load_dotenv
 import requests
 import youthon
 import yt_dlp
+import spotipy
 
 
 class Downloader:
@@ -19,11 +21,24 @@ class Downloader:
         )
     }
     PLATFORM_PREFIXES = {
-        "YouTube": ["https://www.youtube.com/watch?v=", "https://youtu.be/", "https://www.youtube.com/shorts/", "https://youtube.com/shorts/"],
+        "YouTube": [
+            "https://www.youtube.com/watch?v=",
+            "https://youtu.be/",
+            "https://www.youtube.com/shorts/",
+            "https://youtube.com/shorts/",
+        ],
         "X": ["https://x.com/", "https://twitter.com/"],
-        "TikTok": ["https://www.tiktok.com/", "https://vt.tiktok.com/", "https://vm.tiktok.com/"],
+        "TikTok": [
+            "https://www.tiktok.com/",
+            "https://vt.tiktok.com/",
+            "https://vm.tiktok.com/",
+        ],
         "Instagram": ["https://www.instagram.com/reel/", "https://instagram.com/reel/"],
-        "Pinterest": ["https://pin.it/", "https://www.pinterest.com/pin/", "https://in.pinterest.com/pin/"],
+        "Pinterest": [
+            "https://pin.it/",
+            "https://www.pinterest.com/pin/",
+            "https://in.pinterest.com/pin/",
+        ],
         "Spotify": ["https://open.spotify.com/track/"],
     }
 
@@ -43,7 +58,9 @@ class Downloader:
             raise ValueError("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
 
     @staticmethod
-    def detect_platform(url: str) -> Literal["YouTube", "Instagram", "X", "TikTok", "Spotify", "unsupported"]:
+    def detect_platform(
+        url: str,
+    ) -> Literal["YouTube", "Instagram", "X", "TikTok", "Spotify", "unsupported"]:
         """Detects the platform from the URL using prefix matching."""
         for platform, prefixes in Downloader.PLATFORM_PREFIXES.items():
             if any(url.startswith(prefix) for prefix in prefixes):
@@ -56,7 +73,7 @@ class Downloader:
             "format": "best",
             "outtmpl": filename,
             "quiet": True,
-            "http_headers": Downloader.HEADERS
+            "http_headers": Downloader.HEADERS,
         }
 
         if extra_args:
@@ -77,10 +94,17 @@ class Downloader:
     @staticmethod
     def download_spotify_track(url: str) -> str:
         """Download a Spotify track."""
-        subprocess.run(["spotdl", url], check=True)
-        for filename in os.listdir():
+        load_dotenv()
+        os.environ["SPOTIPY_CLIENT_ID"] = os.getenv("SPOTIPY_CLIENT_ID")
+        os.environ["SPOTIPY_CLIENT_SECRET"] = os.getenv("SPOTIPY_CLIENT_SECRET")
+        subprocess.run(["spotify_dl", "--url", url], check=True)
+
+        sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials())
+        track_name = sp.track(track_id=url)["name"]
+        for filename in os.listdir(track_name):
             if filename.endswith(".mp3"):
-                return filename
+                return os.path.join(track_name, filename)
+
         raise FileNotFoundError("Spotify track download failed.")
 
     @staticmethod
