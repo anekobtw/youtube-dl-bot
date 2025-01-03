@@ -1,9 +1,7 @@
 aiogram==3.17.0
 beautifulsoup4==4.12.3
-pytest==8.3.4
 python-dotenv==1.0.1
 Requests==2.32.3
-spotipy==2.24.0
+spotify_music_dl==0.0.2
 youthon==0.4.3
 yt_dlp==2024.12.23
-spotify_dl

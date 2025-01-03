@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import requests
 import youthon
 import yt_dlp
-import spotipy
+from spotify_music_dl import SpotifyDownloader
 
 
 class Downloader:
@@ -41,12 +41,7 @@ class Downloader:
                 {"key": "FFmpegFixupM4a"},
                 {"key": "FFmpegFixupStretched"},
             ],
-            "postprocessor_args": [
-                "-c:v",
-                "h264",
-                "-c:a",
-                "aac",
-            ],
+            "postprocessor_args": ["-c:v", "h264", "-c:a", "aac"],
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -68,18 +63,9 @@ class Downloader:
     @staticmethod
     def download_spotify(url: str) -> str:
         load_dotenv()
-        os.environ["SPOTIPY_CLIENT_ID"] = os.getenv("SPOTIPY_CLIENT_ID")
-        os.environ["SPOTIPY_CLIENT_SECRET"] = os.getenv("SPOTIPY_CLIENT_SECRET")
-        subprocess.run(["spotify_dl", "--url", url], check=True)
-
-        sp = spotipy.Spotify(auth_manager=spotipy.oauth2.SpotifyClientCredentials())
-        track_name = sp.track(track_id=url)["name"]
-        mp3_files = [f for f in os.listdir(track_name) if f.endswith(".mp3")]
-
-        if mp3_files:
-            return os.path.join(track_name, mp3_files[0])
-        raise FileNotFoundError("Spotify track download failed.")
-
+        dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
+        dl.download_track(url)
+        return next((f for f in os.listdir() if f.endswith('.mp3')), None)
 
 class PlatformDetector:
     def __init__(self) -> None:

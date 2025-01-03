@@ -1,5 +1,5 @@
 # YouTube, Instagram, TikTok, X (Twitter), Spotify, Pinterest downloader bot
-![version](https://img.shields.io/badge/Project_version-3.0.1-blue)
+![version](https://img.shields.io/badge/Project_version-3.0.2-blue)
 ![licence](https://img.shields.io/badge/License-MIT-green)
 ![made with love](https://img.shields.io/badge/Made_with-Love-red)
 
