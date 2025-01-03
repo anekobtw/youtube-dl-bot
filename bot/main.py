@@ -14,7 +14,7 @@ async def run_bot():
     load_dotenv()
     TOKEN = os.getenv("TOKEN")
 
-    logging.basicConfig(level=logging.INFO, format="[%(name)s] %(message)s - %(asctime)s")
+    logging.basicConfig(level=logging.INFO, format="[%(name)s] %(message)s - %(asctime)s", datefmt="%H:%M:%S")
 
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
     storage = MemoryStorage()
