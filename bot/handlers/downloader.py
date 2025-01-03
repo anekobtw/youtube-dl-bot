@@ -33,14 +33,19 @@ class Downloader:
 
     def download_youtube(self, url: str, filename: str) -> str:
         ydl_opts = {
-            "outtmpl": f"{filename}.mp4",
+            "outtmpl": f"{filename}.%(ext)s",
             "merge_output_format": "mp4",
-            "format": f"bestvideo[height<=1080][filesize<=45M]+bestaudio[filesize<=5M]/best[height<=1080][filesize<=50M]",
+            "format": f"bestvideo[height<=1080][filesize<=45M]+bestaudio[filesize<=5M]/best[vcodec=h264][height<=1080][filesize<=50M]",
             "postprocessors": [
-                {
-                    "key": "FFmpegVideoConvertor",
-                    "preferedformat": "mp4",
-                }
+                {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"},
+                {"key": "FFmpegFixupM4a"},
+                {"key": "FFmpegFixupStretched"},
+            ],
+            "postprocessor_args": [
+                "-c:v",
+                "h264",
+                "-c:a",
+                "aac",
             ],
         }
 

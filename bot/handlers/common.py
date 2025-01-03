@@ -50,7 +50,6 @@ async def message_handler(message: types.Message) -> None:
 
     except ValueError as e:
         await msg.edit_text("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
-        print(e)
 
     except Exception as e:
         await msg.edit_text("Произошла ошибка. Просим сообщить о баге @anekobtw")
