@@ -5,10 +5,10 @@ import subprocess
 from typing import Literal
 
 import bs4
-from dotenv import load_dotenv
 import requests
 import youthon
 import yt_dlp
+from dotenv import load_dotenv
 from spotify_music_dl import SpotifyDownloader
 
 
@@ -65,7 +65,8 @@ class Downloader:
         load_dotenv()
         dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
         dl.download_track(url)
-        return next((f for f in os.listdir() if f.endswith('.mp3')), None)
+        return next((f for f in os.listdir() if f.endswith(".mp3")), None)
+
 
 class PlatformDetector:
     def __init__(self) -> None:

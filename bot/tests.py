@@ -1,6 +1,7 @@
-import unittest
-from unittest.mock import patch, MagicMock
 import os
+import unittest
+from unittest.mock import MagicMock, patch
+
 from handlers.downloader import Downloader, PlatformDetector
 
 
