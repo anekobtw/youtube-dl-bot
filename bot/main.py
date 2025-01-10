@@ -12,11 +12,9 @@ from handlers import router
 
 async def run_bot():
     load_dotenv()
-    TOKEN = os.getenv("TOKEN")
-
     logging.basicConfig(level=logging.INFO, format="[%(name)s] %(message)s - %(asctime)s", datefmt="%H:%M:%S")
 
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+    bot = Bot(token=os.getenv("TOKEN"), default=DefaultBotProperties(parse_mode="HTML"))
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
     dp.include_router(router)
