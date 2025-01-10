@@ -49,6 +49,6 @@ async def spotify_playlist(message: types.Message) -> None:
         await message.answer_audio(audio=types.FSInputFile(file_path), caption="@free_yt_dl_bot")
         os.remove(file_path)
 
-    # os.removedirs(dirname)
+    os.removedirs(dirname)
     await msg.delete()
     await message.delete()
