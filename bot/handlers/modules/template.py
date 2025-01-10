@@ -11,7 +11,10 @@ def download_(url: str, filename: str) -> str:
     return filename
 
 
-@router.message(F.text.startswith(""))
+links = []
+
+
+@router.message(F.text.startswith(tuple(links)))
 async def _(message: types.Message) -> None:
     filename = f"{time.time_ns()}-{message.from_user.id}."
     await master_handler(
