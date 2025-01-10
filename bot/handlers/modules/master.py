@@ -5,6 +5,7 @@ from typing import Any
 from aiogram import exceptions, types
 from videoprops import get_video_properties
 
+
 async def async_download(function) -> Any:
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, function)

@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from . import youtube, tiktok, x, spotify, pinterest
+from . import pinterest, spotify, tiktok, x, youtube
 
 router = Router()
 router.include_router(youtube.router)

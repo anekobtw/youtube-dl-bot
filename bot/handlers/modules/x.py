@@ -1,8 +1,8 @@
+import re
 import time
 
 import yt_dlp
 from aiogram import F, Router, types
-import re
 
 from handlers.modules.master import master_handler
 
@@ -10,7 +10,7 @@ router = Router()
 
 
 def download_x(url: str, filename: str) -> str:
-    video_number = int(url.split('/')[-1])
+    video_number = int(url.split("/")[-1])
     if video_number < 100:
         url = url.removesuffix(f"/{video_number}")
     else:
