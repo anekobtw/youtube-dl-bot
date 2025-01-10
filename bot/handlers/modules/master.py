@@ -3,7 +3,7 @@ import os
 from typing import Any
 
 from aiogram import exceptions, types
-
+from videoprops import get_video_properties
 
 async def async_download(function) -> Any:
     loop = asyncio.get_event_loop()
@@ -19,8 +19,11 @@ async def master_handler(
 
     try:
         filename = await async_download(download_function)
-        await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot")
-        await message.answer_document(types.FSInputFile(filename), caption="@free_yt_dl_bot")
+        if filename.endswith(".mp4"):
+            props = get_video_properties(filename)
+            await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot", height=props["height"], width=props["width"])
+        else:
+            await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot")
 
     except exceptions.TelegramEntityTooLarge:
         await msg.edit_text("К сожалению, из-за ограничений телеграма, мы не можем отправлять видео больше 50 мегабайт.")
