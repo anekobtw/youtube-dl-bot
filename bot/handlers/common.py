@@ -1,60 +1,31 @@
-import os
-import time
-
-import yt_dlp
-from aiogram import Bot, F, Router, exceptions, methods, types
+from aiogram import F, Router, types
 from aiogram.filters import Command
-from dotenv import load_dotenv
-
-from handlers import downloader
 
 router = Router()
-load_dotenv()
-bot = Bot(os.getenv("TOKEN"))
 
 
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
-    await message.answer(text="Отправь боту ссылку на видео.\nПоддерживаемые ссылки - /supported_links\n\n<b>Мы не собираем никаких данных о Вас!</b>")
+    await message.answer(text="Отправь боту ссылку на видео.\nИнструкция по пользованию - /howtouse\n\n<b>Мы не собираем никаких данных о Вас!</b>")
 
 
-@router.message(F.text, Command("supported_links"))
-async def supported_links(message: types.Message) -> None:
-    await message.answer(downloader.PlatformDetector().get_links_text())
-
-
-@router.message(F.text)
-async def message_handler(message: types.Message) -> None:
-    msg_text = "<b>Платформа: {}</b>\nСкачивание {}\nОтправка {}"
-    msg = await message.answer(msg_text.format("🟨", "❌", "❌"))
-
-    try:
-        # Initialization
-        dl = downloader.Downloader()
-        detector = downloader.PlatformDetector()
-        platform = detector.detect_platform(message.text)
-        await msg.edit_text(msg_text.format(platform, "🟨", "❌"))
-
-        # Downloading
-        filename = dl.download(platform, message.text, str(f"{time.time_ns()}-{message.from_user.id}"))
-        await msg.edit_text(msg_text.format(platform, "✅", "🟨"))
-
-        # Sending
-        file_type = {".mp4": "video", ".png": "photo", ".mp3": "audio"}.get(filename[-4:])
-        await getattr(message, f"answer_{file_type}")(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
-        await msg.edit_text(msg_text.format(platform, "✅", "✅"))
-
-    except (yt_dlp.utils.DownloadError, exceptions.TelegramEntityTooLarge):
-        await msg.edit_text("К сожалению, из-за ограничений телеграма, мы не можем отправлять видео больше 50 мегабайт.")
-
-    except ValueError as e:
-        await msg.edit_text("Ссылка не поддерживается. Поддерживаемые ссылки - /supported_links")
-
-    except Exception as e:
-        await msg.edit_text("Произошла ошибка. Просим сообщить о баге @anekobtw")
-        print(e)
-
-    else:
-        await message.delete()
-        await msg.delete()
-        os.remove(filename)
+@router.message(F.text, Command("howtouse"))
+async def howtouse(message: types.Message) -> None:
+    await message.answer(
+        text="\n".join(
+            (
+                "Бот состоит из разных модулей, каждый из которых отвечает за свою платформу.",
+                "Отправляя ссылку, автоматически определяется из какой соц.сети данная ссылка и запускается модуль именно этой платформы.",
+                "Бот иногда может предлагать разные варианты для скачивания (например, несколько качеств). Просто следуйте инструкциям.",
+                "Если скачивание завершится успешно, то бот удалит ваше сообщение и отправит файл.",
+                "В ином случае, бот отправит только сообщение с ошибкой.",
+                "",
+                "<b>Важно:</b>",
+                "Пожалуйста, не скачивайте слишком большие видео файлы, так как это может занять много времени и ресурсов.",
+                "Видео с ютуба рекомендуем скачивать длительностью до 5-10 минут для оптимальной работы бота.",
+                "Если видео слишком большое, рекомендуется выбрать более низкое качество.",
+                "",
+                "Если пост в Х (твиттере) имеет несколько видео, то после ссылки через слеш укажите номер видео, которое хотите скачать (например, для третьего видео {ссылка}/3)",
+            )
+        )
+    )
