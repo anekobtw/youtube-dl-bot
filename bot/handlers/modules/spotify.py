@@ -16,6 +16,7 @@ async def download_spotify_song(url: str, filename: str) -> str:
     await dl.download_track(url, filename)
     return filename
 
+
 async def download_spotify_playlist(url: str, directory_name: str) -> str:
     load_dotenv()
     dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
@@ -36,13 +37,11 @@ async def spotify_song(message: types.Message) -> None:
     await message.delete()
 
 
-
 @router.message(F.text.startswith("https://open.spotify.com/playlist/"))
 async def spotify_playlist(message: types.Message) -> None:
     msg = await message.answer("Плейлист скачивается, это займет много времени. Пожалуйста, подождите.")
 
     dirname = f"{time.time_ns()}-{message.from_user.id}"
-    # dirname = "1736535679254233724-1718021890"
     await download_spotify_playlist(message.text, dirname)
     for filename in os.listdir(dirname):
         file_path = os.path.join(dirname, filename)
