@@ -17,6 +17,19 @@ async def async_download(function: Callable) -> Any:
     return await loop.run_in_executor(None, function)
 
 
+def publish(filename: str) -> str:
+    with open(filename, "rb") as file:
+        headers = {"filename": filename, "Content-Type": "application/octet-stream"}
+        response = requests.post(
+            "https://filebin.net",
+            files={"file": file},
+            data={"bin": "anekobtw"},
+            headers=headers,
+        )
+    res = response.json()
+    return f"https://filebin.net/{res['bin']['id']}/{res['file']['filename']}"
+
+
 async def master_handler(
     message: types.Message,
     send_function: Callable,
@@ -35,29 +48,19 @@ async def master_handler(
 
     except exceptions.TelegramEntityTooLarge:
         await status_msg.edit_text(ERROR_MESSAGES["size_limit"])
-        with open(filename, "rb") as file:
-            headers = {"filename": filename, "Content-Type": "application/octet-stream"}
-            response = requests.post(
-                "https://filebin.net",
-                files={"file": file},
-                data={"bin": "anekobtw"},
-                headers=headers,
-            )
-        res = response.json()
+        await status_msg.edit_text(publish(filename))
         await message.delete()
-        await status_msg.edit_text(f"https://filebin.net/{res['bin']['id']}/{res['file']['filename']}")
 
     except exceptions.TelegramNetworkError:
-        attempts = 3
-        for attempt in range(attempts):
-            try:
+        try:
+            for _ in range(3):
                 await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot")
-                break
-            except exceptions.TelegramNetworkError:
-                if attempt == attempts - 1:
-                    await status_msg.edit_text(ERROR_MESSAGES["general_error"])
-                    break
-                await asyncio.sleep(2**attempt)
+                return
+            await status_msg.edit_text(ERROR_MESSAGES["general_error"])
+        except exceptions.TelegramEntityTooLarge:
+            await status_msg.edit_text(ERROR_MESSAGES["size_limit"])
+            await status_msg.edit_text(publish(filename))
+            await message.delete()
 
     except Exception as e:
         print(e)

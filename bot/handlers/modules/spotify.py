@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 
@@ -8,33 +9,28 @@ from spotify_music_dl import SpotifyDownloader
 from handlers.modules.master import master_handler
 
 router = Router()
+load_dotenv()
+dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
 
 
-async def download_spotify_song(url: str, filename: str) -> str:
-    load_dotenv()
-    dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
-    await dl.download_track(url, filename)
+def download_spotify_track(url: str, filename: str) -> str:
+    asyncio.run(dl.download_track(url, filename))
     return filename
 
 
 async def download_spotify_playlist(url: str, directory_name: str) -> str:
-    load_dotenv()
-    dl = SpotifyDownloader(os.getenv("SPOTIPY_CLIENT_ID"), os.getenv("SPOTIPY_CLIENT_SECRET"))
     await dl.download_playlist(url, directory_name)
     return directory_name
 
 
 @router.message(F.text.startswith("https://open.spotify.com/track/"))
-async def spotify_song(message: types.Message) -> None:
-    msg = await message.answer("Плейлист скачивается, это займет много времени. Пожалуйста, подождите.")
-
+async def spotify_track(message: types.Message) -> None:
     filename = f"{time.time_ns()}-{message.from_user.id}.mp3"
-    await download_spotify_song(message.text, filename)
-    await message.answer_audio(types.FSInputFile(filename), caption="@free_yt_dl_bot")
-    os.remove(filename)
-
-    await msg.delete()
-    await message.delete()
+    await master_handler(
+        message=message,
+        send_function=message.answer_audio,
+        download_function=lambda: download_spotify_track(message.text, filename),
+    )
 
 
 @router.message(F.text.startswith("https://open.spotify.com/playlist/"))

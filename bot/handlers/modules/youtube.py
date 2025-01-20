@@ -11,7 +11,6 @@ router = Router()
 
 def get_ydl_opts(quality: str, filename: str) -> dict:
     formats = {
-        "best": {"format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "h264", "-c:a", "aac"]},
         "fhd": {"format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "h264", "-c:a", "aac"]},
         "hd": {"format": "best[height<=720][ext=mp4]"},
         "sd": {"format": "best[height<=480][ext=mp4]"},
@@ -44,7 +43,6 @@ async def youtube(message: types.Message) -> None:
             caption="Выберите качество загрузки:",
             reply_markup=types.InlineKeyboardMarkup(
                 inline_keyboard=[
-                    [types.InlineKeyboardButton(text="📹 Лучшее качество (Очень долго)", callback_data=f"{message.text}!best")],
                     [types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{message.text}!fhd")],
                     [types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{message.text}!hd")],
                     [types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{message.text}!sd")],
