@@ -35,27 +35,30 @@ links = [
 ]
 
 
+def keyboard(url: str) -> types.InlineKeyboardMarkup:
+    kb = [
+        [types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")],
+        [types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd")],
+        [types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd")],
+        [types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{url}!audio")],
+    ]
+    return types.InlineKeyboardMarkup(inline_keyboard=kb)
+
+
 @router.message(F.text.startswith(tuple(links)))
 async def youtube(message: types.Message) -> None:
     try:
         await message.answer_photo(
             photo=Video(message.text).thumbnail_url,
             caption="Выберите качество загрузки:",
-            reply_markup=types.InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{message.text}!fhd")],
-                    [types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{message.text}!hd")],
-                    [types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{message.text}!sd")],
-                    [types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{message.text}!audio")],
-                ],
-            ),
+            reply_markup=keyboard(message.text),
         )
         await message.delete()
     except Exception as e:
         await message.answer(f"Ошибка при получении информации о видео: {str(e)}")
 
 
-@router.callback_query(lambda c: c.data.count("!") == 1)
+@router.callback_query(lambda c: c.data.startswith(tuple(links)))
 async def process_download(callback: types.CallbackQuery) -> None:
     url, quality = callback.data.split("!")
     extension = "mp3" if quality == "audio" else "mp4"

@@ -4,6 +4,7 @@ from typing import Any, Callable
 
 import requests
 from aiogram import exceptions, types
+from tenacity import retry, retry_if_exception_type, stop, stop_after_attempt
 from videoprops import get_video_properties
 
 ERROR_MESSAGES = {
@@ -30,6 +31,7 @@ def publish(filename: str) -> str:
     return f"https://filebin.net/{res['bin']['id']}/{res['file']['filename']}"
 
 
+@retry(retry=retry_if_exception_type(exceptions.TelegramNetworkError), stop=stop_after_attempt(3))
 async def master_handler(
     message: types.Message,
     send_function: Callable,
@@ -50,17 +52,6 @@ async def master_handler(
         await status_msg.edit_text(ERROR_MESSAGES["size_limit"])
         await status_msg.edit_text(publish(filename))
         await message.delete()
-
-    except exceptions.TelegramNetworkError:
-        try:
-            for _ in range(3):
-                await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot")
-                return
-            await status_msg.edit_text(ERROR_MESSAGES["general_error"])
-        except exceptions.TelegramEntityTooLarge:
-            await status_msg.edit_text(ERROR_MESSAGES["size_limit"])
-            await status_msg.edit_text(publish(filename))
-            await message.delete()
 
     except Exception as e:
         print(e)
