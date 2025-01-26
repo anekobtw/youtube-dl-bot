@@ -13,13 +13,17 @@ router = Router()
 def vids_count(url: str) -> int:
     with yt_dlp.YoutubeDL() as ydl:
         info = ydl.extract_info(url, download=False)
-        return len(info["entries"])
+        if "entries" in info:
+            return len(info["entries"])
+        return 1
 
 
 def download_x(url: str, filename: str, video_index: int = 0) -> str:
     with yt_dlp.YoutubeDL({"outtmpl": filename, "format": "best"}) as ydl:
         info = ydl.extract_info(url, download=False)
-        ydl.download([info["entries"][video_index]["url"]])
+        if "entries" in info:
+            url = info["entries"][video_index]["url"]
+        ydl.download([url])
     return filename
 
 
