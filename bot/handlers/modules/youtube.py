@@ -2,9 +2,8 @@ import time
 
 import yt_dlp
 from aiogram import F, Router, types
-from youthon import Video
-
 from handlers.modules.master import master_handler
+from youthon import Video
 
 router = Router()
 

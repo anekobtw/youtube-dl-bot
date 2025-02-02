@@ -1,10 +1,11 @@
 import asyncio
 import os
+import shutil
 from typing import Any, Callable
 
 import requests
 from aiogram import exceptions, types
-from tenacity import retry, retry_if_exception_type, stop, stop_after_attempt
+from tenacity import retry, retry_if_exception_type, stop_after_attempt
 from videoprops import get_video_properties
 
 ERROR_MESSAGES = {
@@ -60,4 +61,7 @@ async def master_handler(
     else:
         await message.delete()
         await status_msg.delete()
-        os.remove(filename)
+        if os.path.isfile(filename):
+            os.remove(filename)
+        elif os.path.isdir(filename):
+            shutil.rmtree(filename)

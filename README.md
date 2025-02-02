@@ -1,30 +1,49 @@
-# YouTube, Instagram, TikTok, X (Twitter) downloader bot
-![version](https://img.shields.io/badge/Project_version-3.0.3-blue)
-![licence](https://img.shields.io/badge/License-MIT-green)
-![made with love](https://img.shields.io/badge/Made_with-Love-red)
+# YouTube-DL Bot 🚀
 
-A telegram bot for downloading videos from YouTube, Instagram, TikTok, X (Twitter)
+![version](https://img.shields.io/badge/Version-3.0.4-blue)
+![license](https://img.shields.io/badge/License-MIT-green)
+![python](https://img.shields.io/badge/Python-3.8%2B-blue)
 
-Use the bot: [@free_yt_dl_bot](https://t.me/free_yt_dl_bot)
+A Telegram bot for downloading videos from YouTube, Instagram, TikTok, and X (Twitter) directly in your chats.
 
-## Run Locally
+**Live Bot**: [@free_yt_dl_bot](https://t.me/free_yt_dl_bot)  
+
+## Prerequisites 📋
+- Python 3.8+
+- Telegram bot token ([Get from @BotFather](https://t.me/BotFather))
+- FFmpeg
+- `pip` package manager
+
+## Installation & Setup 🛠️
+
+### 1. Clone the repository
 ```bash
 $ git clone https://github.com/anekobtw/youtube-dl-bot.git
-$ cd bot
+$ cd youtube-dl-bot/bot
 $ pip install -r requirements.txt
+```
+
+### 2. Configure environment
+Create a `.env` file with your Telegram bot token:
+`TOKEN=your_telegram_bot_token_here`
+
+### 3. Run the bot
+```bash
 $ python main.py
 ```
 
-## About the project
-### Authors
-- [@anekobtw](https://www.github.com/anekobtw)
+## Contributing 🤝
+We welcome contributions! Please read our Code of Conduct
 
-## Contributing
-Contributions are always welcome!
+# License 📄
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-See `contributing.md` for ways to get started.
+# Troubleshooting 🔧
+<b>Common issues:</b>
+- <b>Invalid URL:</b> Ensure the link is from a supported platform.
+- <b>Download failed:</b> The video might be geo-restricted or private.
+- <b>Size limits:</b> Telegram has the limit of 50 MB per file, try lowering the quality.
 
-Please adhere to this project's `code of conduct`.
+For additional support, [open an issue](https://github.com/anekobtw/youtube-dl-bot/issues).
 
-## License
-The project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+> // Maintained with ❤️ by [@anekobtw](https://github.com/anekobtw)
