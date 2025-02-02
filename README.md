@@ -33,10 +33,10 @@ $ python main.py
 ```
 
 ## Contributing 🤝
-We welcome contributions! Please read our Code of Conduct
+We welcome contributions! Please read our [Code of Conduct](https://github.com/anekobtw/youtube-dl-bot/blob/main/CODE_OF_CONDUCT.md)
 
 # License 📄
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/anekobtw/youtube-dl-bot/blob/main/LICENSE) file for details.
 
 # Troubleshooting 🔧
 <b>Common issues:</b>
