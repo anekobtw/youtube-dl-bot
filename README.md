@@ -35,10 +35,10 @@ $ python main.py
 ## Contributing 🤝
 We welcome contributions! Please read our [Code of Conduct](https://github.com/anekobtw/youtube-dl-bot/blob/main/CODE_OF_CONDUCT.md)
 
-# License 📄
+## License 📄
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/anekobtw/youtube-dl-bot/blob/main/LICENSE) file for details.
 
-# Troubleshooting 🔧
+## Troubleshooting 🔧
 <b>Common issues:</b>
 - <b>Invalid URL:</b> Ensure the link is from a supported platform.
 - <b>Download failed:</b> The video might be geo-restricted or private.
