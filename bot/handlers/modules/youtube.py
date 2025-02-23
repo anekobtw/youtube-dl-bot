@@ -1,7 +1,7 @@
 import time
 
 import yt_dlp
-from aiogram import F, Router, types
+from aiogram import F, Router, types, exceptions
 from youthon import Video
 
 from handlers.modules.master import master_handler
@@ -35,13 +35,21 @@ links = [
 ]
 
 
+def check_fhd_availability(url: str) -> bool:
+    with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
+        info = ydl.extract_info(url, download=False)
+        video_format = next((f for f in info["formats"] if f.get("vcodec") != "none" and f.get("acodec") == "none"), None)
+        return not (video_format and video_format.get("filesize", 0) > 100 * 1024 * 1024)
+
+
 def keyboard(url: str) -> types.InlineKeyboardMarkup:
-    kb = [
-        [types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")],
-        [types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd")],
-        [types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd")],
-        [types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{url}!audio")],
-    ]
+    kb = []
+    if check_fhd_availability(url):
+        kb.append([types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")])
+    kb.append([types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd")])
+    kb.append([types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd")])
+    kb.append([types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{url}!audio")])
+    
     return types.InlineKeyboardMarkup(inline_keyboard=kb)
 
 
@@ -54,8 +62,9 @@ async def youtube(message: types.Message) -> None:
             reply_markup=keyboard(message.text),
         )
         await message.delete()
-    except Exception as e:
-        await message.answer(f"Ошибка при получении информации о видео: {str(e)}")
+    except Exception:
+        await message.answer("Ошибка при получении данных видео.")
+
 
 
 @router.callback_query(lambda c: c.data.startswith(tuple(links)))

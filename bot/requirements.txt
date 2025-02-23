@@ -1,9 +1,8 @@
-aiogram==3.17.0
-get_video_properties==0.1.1
+aiogram==3.18.0
 mutagen==1.47.0
 python-dotenv==1.0.1
 Requests==2.32.3
 tenacity==9.0.0
 youthon==0.4.3
-yt_dlp==2025.1.26
+yt_dlp==2025.2.19
 ytmusicapi==1.10.1
