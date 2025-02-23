@@ -38,14 +38,10 @@ links = [
 def check_fhd_availability(url: str) -> bool:
     with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
         info = ydl.extract_info(url, download=False)
-        fhd_format = next(
-            (f for f in info["formats"]
-             if f.get("vcodec") != "none" and f.get("acodec") == "none" and f.get("height") == 1080),
-            None
-        )
-        if fhd_format and fhd_format.get("filesize"):
-            return fhd_format["filesize"] <= 100 * 1024 * 1024
-        return False
+        fhd_format = next(f for f in info["formats"] if f.get("height") == 1080)
+        filesize = fhd_format.get("filesize")
+        return filesize <= 100 * 1024 * 1024
+
 
 def keyboard(url: str) -> types.InlineKeyboardMarkup:
     kb = []
