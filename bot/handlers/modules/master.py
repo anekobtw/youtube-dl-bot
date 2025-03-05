@@ -33,11 +33,7 @@ def publish(filename: str) -> str:
 
 
 @retry(retry=retry_if_exception_type(exceptions.TelegramNetworkError), stop=stop_after_attempt(3))
-async def master_handler(
-    message: types.Message,
-    send_function: Callable,
-    download_function: Callable,
-) -> None:
+async def master_handler(message: types.Message, send_function: Callable, download_function: Callable) -> None:
     status_msg = await message.answer("Файл подготавливается. Пожалуйста, подождите немного.")
 
     try:
@@ -45,9 +41,9 @@ async def master_handler(
 
         if filename.endswith(".mp4"):
             props = get_video_properties(filename)
-            await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot", height=props["height"], width=props["width"])
+            await send_function(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>", height=props["height"], width=props["width"])
         else:
-            await send_function(types.FSInputFile(filename), caption="@free_yt_dl_bot")
+            await send_function(types.FSInputFile(filename), caption="<b>@free_yt_dl_bot</b>")
 
     except exceptions.TelegramEntityTooLarge:
         await status_msg.edit_text(ERROR_MESSAGES["size_limit"])
