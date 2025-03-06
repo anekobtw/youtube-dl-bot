@@ -11,7 +11,7 @@ router = Router()
 
 def download_youtube(url: str, filename: str, quality: str) -> str:
     formats = {
-        "fhd": {"format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "h264", "-c:a", "aac"]},
+        "fhd": {"format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "copy", "-c:a", "copy"]},
         "hd": {"format": "best[height<=720][ext=mp4]"},
         "sd": {"format": "best[height<=480][ext=mp4]"},
         "audio": {"format": "bestaudio[ext=m4a]", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]},
@@ -27,8 +27,7 @@ def download_youtube(url: str, filename: str, quality: str) -> str:
 
 def keyboard(url: str) -> types.InlineKeyboardMarkup:
     kb = []
-    if Video(url).length_seconds <= 600:
-        kb.append([types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")])
+    kb.append([types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")])
     kb.append([types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd")])
     kb.append([types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd")])
     kb.append([types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{url}!audio")])
