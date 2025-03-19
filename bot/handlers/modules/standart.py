@@ -1,5 +1,3 @@
-import time
-
 import yt_dlp
 from aiogram import F, Router, types
 
@@ -33,7 +31,7 @@ links = [
 
 @router.message(F.text.startswith(tuple(links)))
 async def tiktok(message: types.Message) -> None:
-    filename = f"{time.time_ns()}-{message.from_user.id}.mp4"
+    filename = f"{message.from_user.id}.mp4"
     await master_handler(
         message=message,
         send_function=message.answer_video,

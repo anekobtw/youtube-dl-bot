@@ -1,5 +1,3 @@
-import time
-
 import yt_dlp
 from aiogram import F, Router, types
 from youthon import Video
@@ -59,7 +57,7 @@ async def _(message: types.Message) -> None:
 @router.callback_query(lambda c: c.data.startswith(tuple(links)))
 async def youtube(callback: types.CallbackQuery) -> None:
     url, quality = callback.data.split("!")
-    filename = f"{time.time_ns()}-{callback.message.from_user.id}.{"mp3" if quality == "audio" else "mp4"}"
+    filename = f"{callback.message.from_user.id}.{"mp3" if quality == "audio" else "mp4"}"
 
     await master_handler(
         message=callback.message,
