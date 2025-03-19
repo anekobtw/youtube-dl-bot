@@ -47,7 +47,6 @@ async def master_handler(message: types.Message, send_function: Callable, downlo
 
     try:
         filename = await async_download(download_function)
-        print(2 / 0)
 
         if filename.endswith(".mp4"):
             props = get_video_properties(filename)
