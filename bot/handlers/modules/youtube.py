@@ -11,7 +11,7 @@ router = Router()
 
 def download_youtube(url: str, filename: str, quality: str) -> str:
     formats = {
-        "fhd": {"format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "copy", "-c:a", "copy"]},
+        "fhd": {"format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4", "postprocessor_args": ["-c:v", "libx264", "-c:a", "aac"]},
         "hd": {"format": "best[height<=720][ext=mp4]"},
         "sd": {"format": "best[height<=480][ext=mp4]"},
         "audio": {"format": "bestaudio[ext=m4a]", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]},
@@ -48,7 +48,7 @@ async def _(message: types.Message) -> None:
     try:
         await message.answer_photo(
             photo=Video(message.text).thumbnail_url,
-            caption="Выберите качество загрузки:",
+            caption="🖼️ Выберите качество загрузки:",
             reply_markup=keyboard(message.text),
         )
         await message.delete()

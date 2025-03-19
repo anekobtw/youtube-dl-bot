@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from handlers import router
 
 
-async def run_bot():
+async def run_bot() -> None:
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="[%(name)s] %(message)s - %(asctime)s", datefmt="%H:%M:%S")
 
