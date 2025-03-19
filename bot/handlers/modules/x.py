@@ -27,4 +27,5 @@ async def x(message: types.Message) -> None:
         message=message,
         send_function=message.answer_video,
         download_function=lambda: download_x(message.text, filename),
+        url=message.text,
     )

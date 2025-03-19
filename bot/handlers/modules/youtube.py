@@ -36,7 +36,7 @@ def keyboard(url: str) -> types.InlineKeyboardMarkup:
 
 
 links = [
-    "https://www.youtube.com/watch?v=",
+    "https://www.youtube.com/",
     "https://youtu.be/",
     "https://www.youtube.com/shorts/",
     "https://youtube.com/shorts/",
@@ -53,7 +53,7 @@ async def _(message: types.Message) -> None:
         )
         await message.delete()
     except Exception:
-        await message.answer("Ошибка при получении данных видео.")
+        await message.answer("⚠️ Ошибка при получении данных видео.")
 
 
 @router.callback_query(lambda c: c.data.startswith(tuple(links)))
@@ -65,4 +65,5 @@ async def youtube(callback: types.CallbackQuery) -> None:
         message=callback.message,
         send_function=callback.message.answer_video if quality != "audio" else callback.message.answer_audio,
         download_function=lambda: download_youtube(url, filename, quality),
+        url=url,
     )
