@@ -41,7 +41,6 @@ async def master_handler(message: types.Message, send_function: Callable, downlo
 
     currently_downloading.add(message.from_user.id)
     status_msg = await message.answer(f"⏳ Файл подготавливается. Пожалуйста, подождите немного.")
-    filename = None
 
     try:
         filename = await async_download(download_function)
