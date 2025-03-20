@@ -9,7 +9,7 @@ router = Router()
 
 def download_youtube(url: str, filename: str, quality: str) -> str:
     formats = {
-        "fhd": {"format": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4",},
+        "fhd": {"format": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4"},
         "hd": {"format": "best[height<=720][ext=mp4]"},
         "sd": {"format": "best[height<=480][ext=mp4]"},
         "audio": {"format": "bestaudio[ext=m4a]", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]},
@@ -17,6 +17,7 @@ def download_youtube(url: str, filename: str, quality: str) -> str:
     opts = {
         "outtmpl": filename[:-4] if quality in ["fhd", "audio"] else filename,
         "postprocessors": [{"key": "FFmpegFixupM4a"}, {"key": "FFmpegFixupStretched"}],
+        "geo_bypass": True,
     }
     with yt_dlp.YoutubeDL({**opts, **formats[quality]}) as ydl:
         ydl.download([url])
