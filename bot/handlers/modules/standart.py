@@ -1,8 +1,7 @@
 import yt_dlp
 from aiogram import F, Router, types
-from handlers.modules.master import master_handler
-
 from enums import Links
+from handlers.modules.master import master_handler
 
 router = Router()
 

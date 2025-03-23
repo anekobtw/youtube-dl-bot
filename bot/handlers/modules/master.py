@@ -6,10 +6,9 @@ from typing import Any, Callable
 import requests
 import yt_dlp
 from aiogram import exceptions, types
+from enums import ErrorMessage, StatusMessage
 from tenacity import retry, retry_if_exception_type, stop_after_attempt
 from videoprops import get_video_properties
-
-from enums import ErrorMessage, StatusMessage
 
 currently_downloading = set()
 
@@ -33,46 +32,54 @@ def publish(filename: str) -> str:
 
 @retry(retry=retry_if_exception_type(exceptions.TelegramNetworkError), stop=stop_after_attempt(3))
 async def master_handler(message: types.Message, send_function: Callable, download_function: Callable, url: str) -> None:
+    # A user should not be able to download more than 1 video at a time
     if message.from_user.id in currently_downloading:
         await message.answer(ErrorMessage.MULTIPLE_VIDEOS_ERROR.value)
         return
 
+    # Preparation
     currently_downloading.add(message.from_user.id)
     status_msg = await message.answer(StatusMessage.PREPARING.value)
 
     try:
+        # Asynchronously downloading the video
         filename = await async_download(download_function)
 
+        # Sending the video
         if filename.endswith(".mp4"):
             props = get_video_properties(filename)
             await send_function(types.FSInputFile(filename), caption=StatusMessage.BOT_CAPTION.value, height=props["height"], width=props["width"])
         else:
             await send_function(types.FSInputFile(filename), caption=StatusMessage.BOT_CAPTION.value)
 
+        # Deleting the messages in the chat and promoting the telegram channel if no error occured
         await message.delete()
         await status_msg.delete()
 
+        if random.randint(1, 10) == 1:
+            msg = await message.answer(StatusMessage.PROMO.value)
+            await asyncio.sleep(10)
+            await msg.delete()
+
     except exceptions.TelegramEntityTooLarge:
+        # If the video is too big, publish in to filebin and then send the link to the file
         await status_msg.edit_text(ErrorMessage.SIZE_LIMIT.value)
         await status_msg.edit_text(publish(filename))
         await message.delete()
 
     except yt_dlp.DownloadError:
-        await message.answer(ErrorMessage.YT_DLP_ERROR.value.format(url=url))
+        # If the video is blocked in not available in the hosting's country
+        await status_msg.edit_text(ErrorMessage.YT_DLP_ERROR.value.format(url=url))
 
     except Exception as e:
+        # In any other case
         print(e)
         await status_msg.edit_text(
             text=ErrorMessage.GENERAL_ERROR.value,
             reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(text="📩 Сообщить о проблеме (анонимно)", callback_data=f"report!{url}")]]),
         ),
 
-    else:
-        if random.randint(1, 10) == 1:
-            msg = await message.answer(StatusMessage.PROMO.value)
-            await asyncio.sleep(10)
-            await msg.delete()
-
     finally:
+        # Finally, delete the file and allow the user to download another video
         currently_downloading.discard(message.from_user.id)
         os.remove(filename)
