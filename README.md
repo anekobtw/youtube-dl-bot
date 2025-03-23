@@ -1,7 +1,7 @@
 # YouTube-DL Bot 🚀
 
 ![version](https://img.shields.io/badge/Version-3.1.2-blue)
-![license](https://img.shields.io/badge/License-MIT-green)
+![license](https://img.shields.io/badge/License-CC-red)
 ![python](https://img.shields.io/badge/Python-3.8%2B-blue)
 
 A Telegram bot for downloading videos from YouTube, Instagram, TikTok, and X (Twitter) directly in your chats.
@@ -36,7 +36,7 @@ $ python main.py
 We welcome contributions! Please read our [Code of Conduct](https://github.com/anekobtw/youtube-dl-bot/blob/main/CODE_OF_CONDUCT.md)
 
 ## License 📄
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/anekobtw/youtube-dl-bot/blob/main/LICENSE) file for details.
+©️ This project is copyrighted. Unauthorized copying, distribution, or modification of any files in this repository is strictly prohibited without prior written permission.
 
 ## Troubleshooting 🔧
 <b>Common issues:</b>
