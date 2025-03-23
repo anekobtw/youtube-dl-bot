@@ -1,7 +1,8 @@
 import yt_dlp
 from aiogram import F, Router, types
-
 from handlers.modules.master import master_handler
+
+from enums import Links
 
 router = Router()
 
@@ -17,19 +18,7 @@ def download_tiktok(url: str, filename: str) -> str:
     return filename
 
 
-links = [
-    "https://www.tiktok.com/",
-    "https://vt.tiktok.com/",
-    "https://vm.tiktok.com/",
-    "https://www.instagram.com/reel/",
-    "https://instagram.com/reel/",
-    "https://www.instagram.com/share/",
-    "https://x.com/",
-    "https://twitter.com/",
-]
-
-
-@router.message(F.text.startswith(tuple(links)))
+@router.message(F.text.startswith(tuple(Links.STANDART.value)))
 async def tiktok(message: types.Message) -> None:
     filename = f"{message.from_user.id}.mp4"
     await master_handler(

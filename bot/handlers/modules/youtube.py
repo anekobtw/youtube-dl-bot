@@ -1,8 +1,9 @@
 import yt_dlp
 from aiogram import F, Router, types
+from handlers.modules.master import master_handler
 from youthon import Video
 
-from handlers.modules.master import master_handler
+from enums import Links
 
 router = Router()
 
@@ -33,15 +34,7 @@ def keyboard(url: str) -> types.InlineKeyboardMarkup:
     return types.InlineKeyboardMarkup(inline_keyboard=kb)
 
 
-links = [
-    "https://www.youtube.com/",
-    "https://youtu.be/",
-    "https://www.youtube.com/shorts/",
-    "https://youtube.com/shorts/",
-]
-
-
-@router.message(F.text.startswith(tuple(links)))
+@router.message(F.text.startswith(tuple(Links.YOUTUBE.value)))
 async def _(message: types.Message) -> None:
     try:
         await message.answer_photo(
@@ -54,7 +47,7 @@ async def _(message: types.Message) -> None:
         await message.answer("⚠️ Ошибка при получении данных видео.")
 
 
-@router.callback_query(lambda c: c.data.startswith(tuple(links)))
+@router.callback_query(lambda c: c.data.startswith(tuple(Links.YOUTUBE.value)))
 async def youtube(callback: types.CallbackQuery) -> None:
     url, quality = callback.data.split("!")
     filename = f"{callback.message.from_user.id}.{"mp3" if quality == "audio" else "mp4"}"
