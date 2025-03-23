@@ -17,7 +17,6 @@ def download_youtube(url: str, filename: str, quality: str) -> str:
     opts = {
         "outtmpl": filename[:-4] if quality in ["fhd", "audio"] else filename,
         "postprocessors": [{"key": "FFmpegFixupM4a"}, {"key": "FFmpegFixupStretched"}],
-        "geo_bypass": True,
     }
     with yt_dlp.YoutubeDL({**opts, **formats[quality]}) as ydl:
         ydl.download([url])

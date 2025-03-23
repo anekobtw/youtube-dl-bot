@@ -1,6 +1,8 @@
 import asyncio
 import os
+import random
 import shutil
+import time
 from typing import Any, Callable
 
 import requests
@@ -16,7 +18,7 @@ ERROR_MESSAGES = {
 currently_downloading = set()
 
 
-async def async_download(func: Callable[..., Any]) -> Any:
+async def async_download(func: Callable) -> Any:
     return await asyncio.to_thread(func)
 
 
@@ -65,6 +67,12 @@ async def master_handler(message: types.Message, send_function: Callable, downlo
             text=ERROR_MESSAGES["general_error"],
             reply_markup=types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(text="📩 Сообщить о проблеме (анонимно)", callback_data=f"report!{url}")]]),
         ),
+
+    else:
+        if random.randint(1, 10) == 1:
+            msg = await message.answer("Привет! Я <b>@free_yt_dl_bot</b> — полностью бесплатный, без рекламы и обязательных подписок. Если тебе нравится моя работа, загляни на мой <b><a href='https://t.me/anekobtw_c'>телеграм канал с новостями</a></b> — это большая поддержка для меня! 😊\n\n<b>Это сообщение самоудалится через 10 секунд</b>")
+            time.sleep(10)
+            await msg.delete()
 
     finally:
         currently_downloading.discard(message.from_user.id)
