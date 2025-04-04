@@ -1,6 +1,6 @@
 aiogram==3.19.0
-python-dotenv==1.0.1
+python-dotenv==1.1.0
 Requests==2.32.3
 tenacity==9.0.0
 youthon==0.4.3
-yt_dlp==2025.3.21
+yt_dlp==2025.3.31

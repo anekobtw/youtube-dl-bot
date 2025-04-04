@@ -1,5 +1,6 @@
 import yt_dlp
 from aiogram import F, Router, types
+
 from enums import Links
 from handlers.modules.master import master_handler
 
@@ -10,7 +11,9 @@ def download_tiktok(url: str, filename: str) -> str:
     opts = {
         "format": "best",
         "outtmpl": filename,
-        "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124 Safari/537.36"},
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124 Safari/537.36"
+        },
     }
     with yt_dlp.YoutubeDL(opts) as yt:
         yt.download([url])

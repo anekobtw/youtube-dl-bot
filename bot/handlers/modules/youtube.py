@@ -1,22 +1,34 @@
 import yt_dlp
 from aiogram import F, Router, types
+from youthon import Video
+
 from enums import Links
 from handlers.modules.master import master_handler
-from youthon import Video
 
 router = Router()
 
 
 def download_youtube(url: str, filename: str, quality: str) -> str:
     formats = {
-        "fhd": {"format": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[height<=1080][ext=mp4]", "merge_output_format": "mp4"},
+        "fhd": {
+            "format": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[height<=1080][ext=mp4]",
+            "merge_output_format": "mp4",
+        },
         "hd": {"format": "best[height<=720][ext=mp4]"},
         "sd": {"format": "best[height<=480][ext=mp4]"},
-        "audio": {"format": "bestaudio[ext=m4a]", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]},
+        "audio": {
+            "format": "bestaudio[ext=m4a]",
+            "postprocessors": [
+                {"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}
+            ],
+        },
     }
     opts = {
         "outtmpl": filename[:-4] if quality in ["fhd", "audio"] else filename,
-        "postprocessors": [{"key": "FFmpegFixupM4a"}, {"key": "FFmpegFixupStretched"}],
+        "postprocessors": [
+            {"key": "FFmpegFixupM4a"},
+            {"key": "FFmpegFixupStretched"},
+        ],
     }
     with yt_dlp.YoutubeDL({**opts, **formats[quality]}) as ydl:
         ydl.download([url])
@@ -25,10 +37,34 @@ def download_youtube(url: str, filename: str, quality: str) -> str:
 
 def keyboard(url: str) -> types.InlineKeyboardMarkup:
     kb = []
-    kb.append([types.InlineKeyboardButton(text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd")])
-    kb.append([types.InlineKeyboardButton(text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd")])
-    kb.append([types.InlineKeyboardButton(text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd")])
-    kb.append([types.InlineKeyboardButton(text="🎵 Только аудио", callback_data=f"{url}!audio")])
+    kb.append(
+        [
+            types.InlineKeyboardButton(
+                text="📹 Full HD (1080p) (Долго)", callback_data=f"{url}!fhd"
+            )
+        ]
+    )
+    kb.append(
+        [
+            types.InlineKeyboardButton(
+                text="📹 HD (720p) (Быстро)", callback_data=f"{url}!hd"
+            )
+        ]
+    )
+    kb.append(
+        [
+            types.InlineKeyboardButton(
+                text="📹 SD (480p) (Быстро)", callback_data=f"{url}!sd"
+            )
+        ]
+    )
+    kb.append(
+        [
+            types.InlineKeyboardButton(
+                text="🎵 Только аудио", callback_data=f"{url}!audio"
+            )
+        ]
+    )
 
     return types.InlineKeyboardMarkup(inline_keyboard=kb)
 
@@ -53,7 +89,11 @@ async def youtube(callback: types.CallbackQuery) -> None:
 
     await master_handler(
         message=callback.message,
-        send_function=callback.message.answer_video if quality != "audio" else callback.message.answer_audio,
+        send_function=(
+            callback.message.answer_video
+            if quality != "audio"
+            else callback.message.answer_audio
+        ),
         download_function=lambda: download_youtube(url, filename, quality),
         url=url,
     )
