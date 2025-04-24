@@ -1,34 +1,26 @@
-from aiogram import F, Router, types
+from aiogram import F, Router, exceptions, types
 from aiogram.filters import Command
+
+from enums import Databases, Keyboards, Messages
 
 router = Router()
 
 
-def news_kb() -> types.InlineKeyboardMarkup:
-    return types.InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                types.InlineKeyboardButton(
-                    text="📰 Телеграм канал с новостями", url="t.me/anekobtw_c"
-                )
-            ]
-        ]
-    )
-
-
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
-    await message.answer(
-        text="Отправь боту ссылку на видео.\n\n<b>🛡️ Мы не собираем никаких данных о Вас!</b>",
-        reply_markup=news_kb(),
-    )
+    Databases.ud.value.create_user(message.from_user.id, "en")
+    lang = Databases.ud.value.get_lang(message.from_user.id)
+    if lang == "ru":
+        await message.answer(text=Messages.START_RU.value, reply_markup=Keyboards.MAIN_RU.value)
+    else:
+        await message.answer(text=Messages.START_EN.value, reply_markup=Keyboards.MAIN_EN.value)
 
 
-@router.callback_query(F.data.startswith("report!"))
-async def report(callback: types.CallbackQuery) -> None:
-    data = callback.data.split("!")
-    await callback.bot.send_message(
-        chat_id=1718021890,
-        text=f"<b>❗ Поступил запрос о баге в видео:</b>\n<code>{data[1]}</code>",
-    )
-    await callback.answer("Спасибо за помощь! 💖", show_alert=True)
+@router.callback_query(F.data.startswith("lang_"))
+async def change_language(callback: types.CallbackQuery) -> None:
+    new_lang = callback.data.split("_")[1]
+    Databases.ud.value.update_user(callback.from_user.id, new_lang)
+    try:
+        await callback.message.edit_text(text=Messages[f"START_{new_lang.upper()}"].value, reply_markup=Keyboards[f"MAIN_{new_lang.upper()}"].value)
+    except exceptions.TelegramBadRequest:
+        pass
