@@ -29,6 +29,11 @@ class Keyboards(Enum):
         ]
     )
 
+    def quality_keyboard(url: str, lang: str) -> types.InlineKeyboardMarkup:
+        texts = {"ru": {"video": "📹 Видео + аудио", "audio": "🎵 Только аудио"}, "en": {"video": "📹 Video + audio", "audio": "🎵 Only audio"}}
+        buttons = [[types.InlineKeyboardButton(text=texts[lang]["video"], callback_data=f"{url}!video")], [types.InlineKeyboardButton(text=texts[lang]["audio"], callback_data=f"{url}!audio")]]
+        return types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
 
 class ErrorMessage(Enum):
     SIZE_LIMIT_RU = "⚠️ К сожалению, из-за ограничений Телеграма, мы не можем отправлять видео больше 50 МБ. Пробуем загрузить файл на filebin.net"
@@ -40,8 +45,11 @@ class ErrorMessage(Enum):
     MULTIPLE_VIDEOS_ERROR_RU = "⚠️ Пожалуйста, дождитесь загрузки предыдущего видео и попробуйте снова."
     MULTIPLE_VIDEOS_ERROR_EN = "⚠️ Please wait until the previous video is downloaded and try again."
 
-    YT_DLP_ERROR_RU = "⚠️ Видео могло не загрузиться из-за особенностей хостинга. Попробуйте наше зеркало (не работает 24/7):\n\n<b>@free_yt_dl_mirror_bot</b>"
-    YT_DLP_ERROR_EN = "⚠️ The video may not have downloaded due to hosting specifics. Try our mirror (not available 24/7):\n\n<b>@free_yt_dl_mirror_bot</b>"
+    YT_DLP_ERROR_RU = "⚠️ Видео могло не загрузиться из-за особенностей хостинга или потому что выбранный формат недоступен."
+    YT_DLP_ERROR_EN = "⚠️ The video may not have downloaded due to hosting specifics or because the requested format is unavailable."
+
+    EXTRACT_VIDEO_RU = "⚠️ Ошибка при получении данных видео. Проверьте, чтобы видео не имело возрастных ограничений."
+    EXTRACT_VIDEO_EN = "⚠️ Error extracting video data. Check if the video does not have age restrictions."
 
 
 class Messages(Enum):
@@ -59,13 +67,11 @@ class Messages(Enum):
 
 
 class Links(Enum):
-    YOUTUBE = [
+    STANDART = [
         "https://www.youtube.com/",
         "https://youtu.be/",
         "https://www.youtube.com/shorts/",
         "https://youtube.com/shorts/",
-    ]
-    STANDART = [
         "https://www.tiktok.com/",
         "https://vt.tiktok.com/",
         "https://vm.tiktok.com/",
