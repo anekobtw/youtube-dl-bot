@@ -10,7 +10,7 @@ router = Router()
 async def start(message: types.Message) -> None:
     Databases.ud.value.create_user(message.from_user.id, "en")
     lang = Databases.ud.value.get_lang(message.from_user.id)
-    await message.answer(text=Messages[f"START_{lang.upper()}"].value, reply_markup=Keyboards.MAIN_RU.value)
+    await message.answer(text=Messages[f"START_{lang.upper()}"].value, reply_markup=Keyboards[f"MAIN_{lang.upper()}"].value)
 
 
 @router.callback_query(F.data.startswith("lang_"))
