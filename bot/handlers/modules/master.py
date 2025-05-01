@@ -1,8 +1,7 @@
 import asyncio
 import os
 import random
-from typing import Any, Callable
-from urllib.parse import urlparse, urlunparse
+from typing import Callable
 
 import requests
 import yt_dlp
@@ -46,18 +45,21 @@ def get_thumbnail(url: str) -> str:
 def download(url: str, filename: str, quality: str) -> str:
     formats = {
         "video": {
-            "format": "bestvideo[height<=1080][vcodec^=avc1][ext=mp4]+bestaudio[acodec^=mp4a][ext=m4a]/best[height<=1080][ext=mp4]",
-            "merge_output_format": "mp4",
+            "format": "best",
+            "postprocessors": [{"key": "FFmpegFixupM4a"}, {"key": "FFmpegFixupStretched"}],
         },
         "audio": {
             "format": "bestaudio[ext=m4a]",
             "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}],
         },
     }
-    opts = {"outtmpl": filename, "postprocessors": [{"key": "FFmpegFixupM4a"}, {"key": "FFmpegFixupStretched"}]}
+    opts = {"outtmpl": filename}
+
     with yt_dlp.YoutubeDL({**opts, **formats[quality]}) as ydl:
-        ydl.download([url])
-    return filename
+        info = ydl.extract_info(url, download=True)
+        real_filename = ydl.prepare_filename(info)
+
+    return real_filename
 
 
 async def message_handler(message: types.Message):
@@ -68,13 +70,10 @@ async def message_handler(message: types.Message):
         ydl = yt_dlp.YoutubeDL({"quiet": 1, "format": "best"})
         info = ydl.extract_info(message.text, download=0)
 
-        u = urlparse(info.get("webpage_url"))
-        url = urlunparse((u.scheme, u.netloc, u.path, "", "", ""))
-
         await message.answer_photo(
             photo=types.URLInputFile(info.get("thumbnail")),
             caption="🖼️ Выберите качество загрузки:" if lang == "ru" else "🖼️ Choose the download quality:",
-            reply_markup=Keyboards.quality_keyboard(url, lang),
+            reply_markup=Keyboards.quality_keyboard(message.text, lang),
         )
         await message.delete()
     except Exception as e:
