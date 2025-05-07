@@ -1,6 +1,6 @@
 # YouTube-DL Bot 🚀
 
-![version](https://img.shields.io/badge/Version-3.3.1-blue)
+![version](https://img.shields.io/badge/Version-3.4.0-blue)
 ![license](https://img.shields.io/badge/License-CC-red)
 ![python](https://img.shields.io/badge/Python-3.8%2B-blue)
 
