@@ -4,6 +4,7 @@ import random
 from typing import Callable
 
 import requests
+import videoprops
 import yt_dlp
 from aiogram import exceptions, types
 
@@ -34,7 +35,8 @@ class Downloader:
             self.filename = await self._async_download(lambda: self._download(self.url, self.filename, self.quality))
             self.filename = os.path.basename(self.filename)
             if self.filename.endswith(".mp4"):
-                await self.message.answer_video(types.FSInputFile(self.filename), caption=Messages.BOT_CAPTION.value)
+                props = videoprops.get_video_properties(self.filename)
+                await self.message.answer_video(types.FSInputFile(self.filename), caption=Messages.BOT_CAPTION.value, height=props["height"], width=props["width"])
             else:
                 await self.message.answer_audio(types.FSInputFile(self.filename), caption=Messages.BOT_CAPTION.value)
 
