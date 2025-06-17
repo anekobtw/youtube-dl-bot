@@ -1,23 +1,22 @@
-from aiogram import F, Router, exceptions, types
+from aiogram import F, Router, types
 from aiogram.filters import Command
-
-from enums import Databases, Keyboards, Messages
 
 router = Router()
 
 
 @router.message(F.text, Command("start"))
 async def start(message: types.Message) -> None:
-    Databases.ud.value.create_user(message.from_user.id, "en")
-    lang = Databases.ud.value.get_lang(message.from_user.id)
-    await message.answer(text=Messages.START.value[lang], reply_markup=Keyboards[f"MAIN_{lang.upper()}"].value)
+    kb = types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(text="📰 A Telegram channel with news", url="t.me/anekobtw_c")]])
 
+    await message.answer(
+        f"""
+Hello, @{message.from_user.username}! Just send the link to the video.
 
-@router.callback_query(F.data.startswith("lang_"))
-async def change_language(callback: types.CallbackQuery) -> None:
-    new_lang = callback.data.split("_")[1]
-    Databases.ud.value.update_user(callback.from_user.id, new_lang)
-    try:
-        await callback.message.edit_text(text=Messages.START.value[new_lang], reply_markup=Keyboards[f"MAIN_{new_lang.upper()}"].value)
-    except exceptions.TelegramBadRequest:
-        pass
+ℹ️ <b>We don’t collect any data.</b>
+
+❗ <b>If the bot isn’t working, don’t worry</b> — your request will be processed automatically once we're back online.
+
+🙏 <b>Please don’t block the bot</b> — it needs to message you when the download is ready.
+""",
+        reply_markup=kb,
+    )
