@@ -21,22 +21,13 @@ class Downloader:
     @staticmethod
     def download_video(url: str) -> str:
         opts = {
-            "merge_output_format": "mp4",
-            "format": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
-            "postprocessors": [
-                {"key": "FFmpegVideoConvertor", "preferedformat": "mp4"},
-                {"key": "FFmpegFixupM4a"},
-                {"key": "FFmpegFixupStretched"},
-            ],
-            "postprocessor_args": [
-                "-c:v", "h264",
-                "-c:a", "copy",
-            ],
+            "format": "best",
             "quiet": True,
         }
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            return ydl.prepare_filename(info)
+            filename = ydl.prepare_filename(info)
+            return filename, (info['width'], info['height'])
 
     @staticmethod
     def download_audio(url: str) -> str:

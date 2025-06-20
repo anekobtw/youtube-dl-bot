@@ -34,7 +34,7 @@ async def handle_download(message: types.Message):
 
     # download
     try:
-        video_path = await downloader.run(message.text, "video")
+        video_path, (width, height) = await downloader.run(message.text, "video")
         await msg.edit_text(f"<code>{message.text}</code>\n\n✔️ Video | ⏳ Audio")
 
         audio_path = await downloader.run(message.text, "audio")
@@ -48,7 +48,7 @@ async def handle_download(message: types.Message):
         return
 
     try:
-        await message.answer_video(types.FSInputFile(video_path), caption=caption)
+        await message.answer_video(types.FSInputFile(video_path), caption=caption, width=width, height=height)
         await message.answer_audio(types.FSInputFile(audio_path), caption=caption)
     except Exception as e:
         await msg.edit_text(f"<code>{message.text}</code>\n\n⏳ Ошибка отправки файла в телеграм. Попытка выложить файл на filebin.")
