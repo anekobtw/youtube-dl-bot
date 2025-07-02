@@ -4,7 +4,7 @@ import random
 import uuid
 
 import requests
-from aiogram import F, Router, types
+from aiogram import F, Router, types, exceptions
 from aiogram.filters import Command
 
 from enums import Links
@@ -21,10 +21,12 @@ def publish(user_id: int, filename: str) -> str:
         data = f.read()
 
     response = requests.post(url, headers=headers, data=data)
-    print(response.status_code)
-    print(response.text)
     res = response.json()
     return url
+
+
+async def log(message: types.Message, text: str):
+    await message.bot.send_message(chat_id=1718021890, text=text, link_preview_options=types.LinkPreviewOptions(is_disabled=True))
 
 
 @router.message(F.text.startswith(tuple(Links.STANDART.value)))
@@ -33,33 +35,37 @@ async def handle_download(message: types.Message):
     await message.react([types.reaction_type_emoji.ReactionTypeEmoji(emoji="👀")])
     caption = f"<b><i><a href='https://t.me/free_yt_dl_bot'>via</a> | <a href='{message.text}'>link</a></i></b>"
     msg = await message.answer(f"<code>{message.text}</code>\n\nYour download will start soon.")
-    downloader = Downloader(message.text, msg)
+
 
     # download
     try:
+        downloader = Downloader(message.text, msg)
         video_path, (width, height) = await downloader.run()
     except Exception as e:
-        await message.bot.send_message(chat_id=1718021890, text=f"❗ <code>{message.text}</code>\n\n{e}")
-        await msg.edit_text(f"<code>{message.text}</code>\n\n⚠️ An error occurred during download. This usually happens because the video is age-restricted (18+) or unavailable in the hosting country.")
+        await log(f"❗ <code>{message.text}</code>\n\n{e}")
+        await msg.edit_text(f"<code>{message.text}</code>\n\n⚠️ An error occurred during download. This usually happens because the video is age-restricted (18+).")
         return
+
 
     # send
     try:
         await message.answer_video(types.FSInputFile(video_path), caption=caption, width=width, height=height)
-    except Exception as e:
+    except exceptions.TelegramEntityTooLarge:
         await msg.edit_text(f"<code>{message.text}</code>\n\n⏳ The video is too large for Telegram. Uploading to Filebin...")
         try:
             filebin_url = publish(message.from_user.id, video_path)
-            await msg.edit_text(f"{filebin_url}\n\n{caption}")
-            await message.bot.send_message(chat_id=1718021890, text=f"<code>{filebin_url}</code>")
+            await message.answer(f"{filebin_url}\n\n{caption}")
+            await log(f"<code>{filebin_url}</code>")
         except Exception as e:
             await msg.edit_text("😔 We've hit all the limits. Filebin is temporarily not available.")
 
+
     # log and cleanup
-    await message.bot.send_message(chat_id=1718021890, text=f"✅ <code>{message.text}</code>")
+    await log(f"✅ <code>{message.text}</code>")
     await message.delete()
     await msg.delete()
     os.remove(video_path)
+
 
     # Promote my telegram channel
     if random.randint(1, 5) == 1:

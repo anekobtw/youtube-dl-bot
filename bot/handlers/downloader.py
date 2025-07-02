@@ -32,7 +32,7 @@ class Downloader:
         return await asyncio.to_thread(self.download_video, self.url)
 
     def progress_hook(self, d):
-        if d["status"] == "downloading" and time.time() - self.last_update_time >= 3:
+        if d["status"] == "downloading" and time.time() - self.last_update_time >= 2:
             self.last_update_time = time.time()
             self.loop.call_soon_threadsafe(asyncio.create_task, self.update_message(d))
 
