@@ -42,7 +42,7 @@ async def handle_download(message: types.Message):
         downloader = Downloader(message.text, msg)
         video_path, (width, height) = await downloader.run()
     except Exception as e:
-        await log(f"❗ <code>{message.text}</code>\n\n{e}")
+        await log(message, f"❗ <code>{message.text}</code>\n\n{e}")
         await msg.edit_text(f"<code>{message.text}</code>\n\n⚠️ An error occurred during download. This usually happens because the video is age-restricted (18+).")
         return
 
@@ -55,13 +55,13 @@ async def handle_download(message: types.Message):
         try:
             filebin_url = publish(message.from_user.id, video_path)
             await message.answer(f"{filebin_url}\n\n{caption}")
-            await log(f"<code>{filebin_url}</code>")
+            await log(message, f"<code>{filebin_url}</code>")
         except Exception as e:
             await msg.edit_text("😔 We've hit all the limits. Filebin is temporarily not available.")
 
 
     # log and cleanup
-    await log(f"✅ <code>{message.text}</code>")
+    await log(message, f"✅ <code>{message.text}</code>")
     await message.delete()
     await msg.delete()
     os.remove(video_path)
