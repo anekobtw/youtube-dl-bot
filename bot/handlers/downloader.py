@@ -49,7 +49,12 @@ class Downloader:
         filled_blocks = int(round(bar_length * percent / 100))
         bar = f"[{'█' * filled_blocks}{'░' * (bar_length - filled_blocks)}]"
 
-        text = f"<code>{self.url}</code>\n\n" f"{bar} {percent:.1f}%\n" f"💾 {format_bytes(downloaded)} / {format_bytes(total)}\n" f"⏳ Remaining: {format_time(eta)}"
+        text = (
+            f"<code>{self.url}</code>\n\n"
+            f"{bar} {percent:.1f}%\n"
+            f"💾 {format_bytes(downloaded)} / {format_bytes(total)}\n"
+            f"⏳ Remaining: {format_time(eta)}"
+        )
 
         await self.message.edit_text(text=text)
 
@@ -63,4 +68,4 @@ class Downloader:
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info)
-            return filename, (info["width"], info["height"])
+            return filename, (info.get("width", 0), info.get("height", 0))

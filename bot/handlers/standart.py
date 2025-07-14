@@ -4,7 +4,7 @@ import random
 import uuid
 
 import requests
-from aiogram import F, Router, types, exceptions
+from aiogram import F, Router, exceptions, types
 from aiogram.filters import Command
 
 from enums import Links
@@ -36,7 +36,6 @@ async def handle_download(message: types.Message):
     caption = f"<b><i><a href='https://t.me/free_yt_dl_bot'>via</a> | <a href='{message.text}'>link</a></i></b>"
     msg = await message.answer(f"<code>{message.text}</code>\n\nYour download will start soon.")
 
-
     # download
     try:
         downloader = Downloader(message.text, msg)
@@ -45,7 +44,6 @@ async def handle_download(message: types.Message):
         await log(message, f"❗ <code>{message.text}</code>\n\n{e}")
         await msg.edit_text(f"<code>{message.text}</code>\n\n⚠️ An error occurred during download. This usually happens because the video is age-restricted (18+).")
         return
-
 
     # send
     try:
@@ -59,13 +57,11 @@ async def handle_download(message: types.Message):
         except Exception as e:
             await msg.edit_text("😔 We've hit all the limits. Filebin is temporarily not available.")
 
-
     # log and cleanup
     await log(message, f"✅ <code>{message.text}</code>")
     await message.delete()
     await msg.delete()
     os.remove(video_path)
-
 
     # Promote my telegram channel
     if random.randint(1, 5) == 1:
