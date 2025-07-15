@@ -18,7 +18,9 @@ A Telegram bot for downloading videos from different platforms directly in your 
 
 **4. Create a `.env` file in `bot/` folder with:**
 
-`TOKEN = your_telegram_bot_token_here` 
+```
+TOKEN = your_telegram_bot_token_here
+``` 
 
 **5. Clone and install dependencies:**
 
