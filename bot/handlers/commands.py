@@ -1,4 +1,5 @@
 import asyncio
+import os
 import random
 
 import requests
@@ -57,6 +58,9 @@ async def handle_download(message: types.Message):
                     caption=Messages.VideoDownloaded.f(url=message.text),
                     reply_markup=link_button("Open url", response["video_url"]),
                 )
+        else:
+            await msg.edit_text(Messages.ErrorOccured.value)
+            return
 
     # --- Downloading on current device ---
     else:
@@ -70,8 +74,9 @@ async def handle_download(message: types.Message):
                 caption=Messages.Caption.f(url=message.text),
             )
 
-        except Exception as e:
-            print(e)
+            os.remove(video_path)
+
+        except Exception:
             await msg.edit_text(Messages.ErrorOccured.value)
             return
 
