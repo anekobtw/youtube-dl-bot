@@ -33,16 +33,29 @@ def download_video(request: DownloadRequest):
         "outtmpl": "files/%(title)s.%(ext)s",
         "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best",
         "merge_output_format": "mp4",
+        "writethumbnail": True,
         "quiet": True,
         "no_warnings": True,
+        "postprocessors": [
+            {"key": "FFmpegThumbnailsConvertor", "format": "png"},
+        ],
     }
 
     try:
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(request.url)
-            filename = ydl.prepare_filename(info)
-            video_url = f"{public_url}/files/{os.path.basename(filename)}"
-        return {"status": "success", "video_url": video_url}
+            video_filename = ydl.prepare_filename(info)
+            thumbnail_filename = os.path.splitext(video_filename)[0] + ".png"
+
+            video_url = f"{public_url}/files/{os.path.basename(video_filename)}"
+            thumbnail_url = f"{public_url}/files/{os.path.basename(thumbnail_filename)}"
+
+        return {
+            "status": "success",
+            "video_url": video_url,
+            "thumbnail_url": thumbnail_url,
+            "filesize": os.path.getsize(video_filename),
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

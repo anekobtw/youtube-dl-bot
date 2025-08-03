@@ -35,7 +35,7 @@ async def handle_download(message: types.Message):
     msg = await message.answer(Messages.API_Finding.f(url=message.text))
     ip = find()
 
-    # --- Downloading from API
+    # --- Downloading from API ---
     if ip:
         await msg.edit_text(Messages.API_Found.f(url=message.text))
 
@@ -45,10 +45,18 @@ async def handle_download(message: types.Message):
         ).json()
 
         if response["status"] == "success":
-            await message.answer(
-                text=Messages.VideoDownloaded.f(url=message.text),
-                reply_markup=link_button("Open url", response["video_url"]),
-            )
+            if response["filesize"] < 50 * 1024 * 1024:
+                await message.answer_video(
+                    video=types.URLInputFile(response["video_url"]),
+                    cover=types.URLInputFile(response["thumbnail_url"]),
+                    caption=Messages.Caption.f(url=message.text),
+                )
+            else:
+                await message.answer_photo(
+                    photo=types.URLInputFile(response["thumbnail_url"]),
+                    caption=Messages.VideoDownloaded.f(url=message.text),
+                    reply_markup=link_button("Open url", response["video_url"]),
+                )
 
     # --- Downloading on current device ---
     else:
@@ -59,18 +67,18 @@ async def handle_download(message: types.Message):
 
             await message.answer_video(
                 video=types.FSInputFile(video_path),
-                caption=Messages.Caption,
+                caption=Messages.Caption.f(url=message.text),
             )
 
         except Exception as e:
             print(e)
-            await msg.edit_text(Messages.ErrorOccured)
+            await msg.edit_text(Messages.ErrorOccured.value)
             return
 
+    # --- Clearing up and promoting ---
     await message.delete()
     await msg.delete()
 
-    # Promote my telegram channel
     if random.randint(1, 5) == 1:
         promo_msg = await message.answer(Messages.Promo)
         await asyncio.sleep(15)
@@ -79,7 +87,7 @@ async def handle_download(message: types.Message):
 
 @router.message(CommandStart())
 async def start(message: types.Message) -> None:
-    await message.answer(Messages.Start, reply_markup=link_button("📰 A Telegram channel with news", "t.me/anekobtw_c"))
+    await message.answer(Messages.Start.value, reply_markup=link_button("📰 A Telegram channel with news", "t.me/anekobtw_c"))
 
 
 @router.message(Command("api"))
