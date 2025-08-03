@@ -1,7 +1,6 @@
 from aiogram import Router
 
-from . import common, standart
+from . import commands
 
 router = Router()
-router.include_router(common.router)
-router.include_router(standart.router)
+router.include_router(commands.router)

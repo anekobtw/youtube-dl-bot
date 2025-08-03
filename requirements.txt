@@ -1,0 +1,8 @@
+aiogram==3.21.0
+fastapi==0.116.1
+pydantic==2.11.7
+pyngrok==7.2.12
+python-dotenv==1.1.1
+Requests==2.32.4
+uvicorn==0.35.0
+yt_dlp==2025.7.21
