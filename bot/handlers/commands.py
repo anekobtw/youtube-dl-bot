@@ -130,30 +130,31 @@ async def cache(message: types.Message) -> None:
 
     lines = read_cache()
     for c, line in enumerate(lines, 1):
-        await message.answer(f"Processing line {c} out of {len(lines)}")
+        try:
+            await message.answer(f"Processing line {c} out of {len(lines)}")
 
-        async with httpx.AsyncClient(timeout=None) as client:
-            r = await client.post(f"http://{ip}:8000/download", json={"url": line["url"]})
+            async with httpx.AsyncClient(timeout=None) as client:
+                r = await client.post(f"http://{ip}:8000/download", json={"url": line["url"]})
+                response = r.json()
 
-            if r.status_code != 200:
-                continue
+            if response["filesize"] < 50 * 1024 * 1024:
+                await message.bot.send_video(
+                    chat_id=line["user_id"],
+                    video=types.URLInputFile(response["video_url"]),
+                    cover=types.URLInputFile(response["thumbnail_url"]),
+                    caption=Messages.Caption.f(url=message.text),
+                )
+            else:
+                await message.bot.send_photo(
+                    chat_id=line["user_id"],
+                    photo=types.URLInputFile(response["thumbnail_url"]),
+                    caption=Messages.VideoDownloaded.f(url=message.text),
+                    reply_markup=link_button("Open url", response["video_url"]),
+                )
 
-            response = r.json()
-
-        if response["filesize"] < 50 * 1024 * 1024:
-            await message.bot.send_video(
-                chat_id=line["user_id"],
-                video=types.URLInputFile(response["video_url"]),
-                cover=types.URLInputFile(response["thumbnail_url"]),
-                caption=Messages.Caption.f(url=message.text),
-            )
-        else:
-            await message.bot.send_photo(
-                chat_id=line["user_id"],
-                photo=types.URLInputFile(response["thumbnail_url"]),
-                caption=Messages.VideoDownloaded.f(url=message.text),
-                reply_markup=link_button("Open url", response["video_url"]),
-            )
+        except Exception as e:
+            print(e)
+            continue
 
     await message.answer("Done!")
     clear_cache()
