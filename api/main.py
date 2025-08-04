@@ -31,19 +31,16 @@ def process_download(request: DownloadRequest):
     ydl_opts = {
         "outtmpl": "files/%(title)s.%(ext)s",
         "format": (
-            "bestvideo[ext=mp4][vcodec^=avc1][fps>=60]+bestaudio[ext=m4a]/"
             "bestvideo[ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/"
             "best[ext=mp4][vcodec^=avc1]"
         ),  # fmt: skip
         "merge_output_format": "mp4",
         "writethumbnail": True,
-        "quiet": True,
-        "no_warnings": True,
         "postprocessors": [
             # {"key": "FFmpegThumbnailsConvertor", "format": "png"},
             {"key": "FFmpegFixupStretched"},
         ],
-        "postprocessor_args": ["-c:v", "libx264", "-c:a", "aac"],
+        "postprocessor_args": ["-c:v", "copy", "-c:a", "copy"],
     }
 
     with YoutubeDL(ydl_opts) as ydl:
