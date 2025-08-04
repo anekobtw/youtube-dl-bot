@@ -8,7 +8,6 @@ import requests
 import yt_dlp
 from aiogram import F, Router, types
 from aiogram.filters import Command, CommandStart
-
 from enums import Links, Messages
 from find import find
 
@@ -135,6 +134,10 @@ async def cache(message: types.Message) -> None:
 
         async with httpx.AsyncClient(timeout=None) as client:
             r = await client.post(f"http://{ip}:8000/download", json={"url": line["url"]})
+
+            if r.status_code != 200:
+                continue
+
             response = r.json()
 
         if response["filesize"] < 50 * 1024 * 1024:
