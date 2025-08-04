@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 import random
 
@@ -7,13 +8,33 @@ import requests
 import yt_dlp
 from aiogram import F, Router, types
 from aiogram.filters import Command, CommandStart
+
 from enums import Links, Messages
 from find import find
 
 router = Router()
 
 
-async def download_video(url: str):
+def read_cache():
+    if not os.path.exists("cache.json"):
+        return []
+    with open("cache.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def append_cache(new_data) -> None:
+    data = read_cache()
+    data.append(new_data)
+    with open("cache.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+def clear_cache():
+    with open("cache.json", "w", encoding="utf-8") as f:
+        f.write("[]")
+
+
+async def download_video(url: str) -> str:
     opts = {
         "format": "bestvideo[filesize<45M]+bestaudio[filesize<5M]/worstvideo+worstaudio",
         "noplaylist": True,
@@ -25,7 +46,7 @@ async def download_video(url: str):
         return ydl.prepare_filename(info)
 
 
-def link_button(text: str, url: str):
+def link_button(text: str, url: str) -> types.InlineKeyboardMarkup:
     return types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(text=text, url=url)]])
 
 
@@ -60,6 +81,8 @@ async def handle_download(message: types.Message):
 
         # --- Downloading on current device ---
         else:
+            append_cache({"user_id": message.from_user.id, "url": message.text})
+
             await msg.edit_text(Messages.API_NotFound.f(url=message.text))
 
             video_path = await download_video(message.text)
@@ -71,7 +94,8 @@ async def handle_download(message: types.Message):
 
             os.remove(video_path)
 
-    except Exception:
+    except Exception as e:
+        print(e)
         await msg.edit_text(Messages.ErrorOccured.f(url=message.text))
         return
 
@@ -96,3 +120,37 @@ async def start(message: types.Message) -> None:
 @router.message(Command("api"))
 async def api(message: types.Message) -> None:
     await message.answer(Messages.Api.f(status="🟢 Online" if find() else "🔴 Offline"))
+
+
+@router.message(F.from_user.id == 1718021890, Command("cache"))
+async def cache(message: types.Message) -> None:
+    ip = find()
+    if not ip:
+        await message.answer("⚠️ API is not working.")
+        return
+
+    lines = read_cache()
+    for c, line in enumerate(lines, 1):
+        await message.answer(f"Processing line {c} out of {len(lines)}")
+
+        async with httpx.AsyncClient(timeout=None) as client:
+            r = await client.post(f"http://{ip}:8000/download", json={"url": line["url"]})
+            response = r.json()
+
+        if response["filesize"] < 50 * 1024 * 1024:
+            await message.bot.send_video(
+                chat_id=line["user_id"],
+                video=types.URLInputFile(response["video_url"]),
+                cover=types.URLInputFile(response["thumbnail_url"]),
+                caption=Messages.Caption.f(url=message.text),
+            )
+        else:
+            await message.bot.send_photo(
+                chat_id=line["user_id"],
+                photo=types.URLInputFile(response["thumbnail_url"]),
+                caption=Messages.VideoDownloaded.f(url=message.text),
+                reply_markup=link_button("Open url", response["video_url"]),
+            )
+
+    await message.answer("Done!")
+    clear_cache()
