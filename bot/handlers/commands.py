@@ -142,13 +142,13 @@ async def cache(message: types.Message) -> None:
                     chat_id=line["user_id"],
                     video=types.URLInputFile(response["video_url"]),
                     cover=types.URLInputFile(response["thumbnail_url"]),
-                    caption=Messages.Caption.f(url=message.text),
+                    caption=Messages.Caption.f(url=line["url"]),
                 )
             else:
                 await message.bot.send_photo(
                     chat_id=line["user_id"],
                     photo=types.URLInputFile(response["thumbnail_url"]),
-                    caption=Messages.VideoDownloaded.f(url=message.text),
+                    caption=Messages.VideoDownloaded.f(url=line["url"]),
                     reply_markup=link_button("Open url", response["video_url"]),
                 )
 
