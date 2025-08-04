@@ -2,13 +2,13 @@ import asyncio
 import os
 import random
 
+import httpx
 import requests
 import yt_dlp
 from aiogram import F, Router, types
 from aiogram.filters import Command, CommandStart
-
 from enums import Links, Messages
-from handlers.find import find
+from find import find
 
 router = Router()
 
@@ -36,16 +36,15 @@ async def handle_download(message: types.Message):
     msg = await message.answer(Messages.API_Finding.f(url=message.text))
     ip = find()
 
-    # --- Downloading from API ---
-    if ip:
-        await msg.edit_text(Messages.API_Found.f(url=message.text))
+    try:
+        # --- Downloading from API ---
+        if ip:
+            await msg.edit_text(Messages.API_Found.f(url=message.text))
 
-        response = requests.post(
-            url=f"http://{ip}:8000/download",
-            json={"url": message.text},
-        ).json()
+            async with httpx.AsyncClient(timeout=None) as client:
+                r = await client.post(f"http://{ip}:8000/download", json={"url": message.text})
+                response = r.json()
 
-        if response["status"] == "success":
             if response["filesize"] < 50 * 1024 * 1024:
                 await message.answer_video(
                     video=types.URLInputFile(response["video_url"]),
@@ -58,13 +57,9 @@ async def handle_download(message: types.Message):
                     caption=Messages.VideoDownloaded.f(url=message.text),
                     reply_markup=link_button("Open url", response["video_url"]),
                 )
-        else:
-            await msg.edit_text(Messages.ErrorOccured.value)
-            return
 
-    # --- Downloading on current device ---
-    else:
-        try:
+        # --- Downloading on current device ---
+        else:
             await msg.edit_text(Messages.API_NotFound.f(url=message.text))
 
             video_path = await download_video(message.text)
@@ -76,23 +71,26 @@ async def handle_download(message: types.Message):
 
             os.remove(video_path)
 
-        except Exception:
-            await msg.edit_text(Messages.ErrorOccured.value)
-            return
+    except Exception:
+        await msg.edit_text(Messages.ErrorOccured.f(url=message.text))
+        return
 
     # --- Clearing up and promoting ---
     await message.delete()
     await msg.delete()
 
     if random.randint(1, 5) == 1:
-        promo_msg = await message.answer(Messages.Promo)
+        promo_msg = await message.answer(Messages.Promo.value)
         await asyncio.sleep(15)
         await promo_msg.delete()
 
 
 @router.message(CommandStart())
 async def start(message: types.Message) -> None:
-    await message.answer(Messages.Start.value, reply_markup=link_button("📰 A Telegram channel with news", "t.me/anekobtw_c"))
+    await message.answer(
+        text=Messages.Start.f(username=message.from_user.username),
+        reply_markup=link_button("📰 A Telegram channel with news", "t.me/anekobtw_c"),
+    )
 
 
 @router.message(Command("api"))

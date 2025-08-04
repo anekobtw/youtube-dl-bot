@@ -27,8 +27,7 @@ def health():
     return {"status": "ok"}
 
 
-@app.post("/download")
-def download_video(request: DownloadRequest):
+def process_download(request: DownloadRequest):
     ydl_opts = {
         "outtmpl": "files/%(title)s.%(ext)s",
         "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best",
@@ -41,23 +40,22 @@ def download_video(request: DownloadRequest):
         ],
     }
 
-    try:
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(request.url)
-            video_filename = ydl.prepare_filename(info)
-            thumbnail_filename = os.path.splitext(video_filename)[0] + ".png"
-
-            video_url = f"{public_url}/files/{os.path.basename(video_filename)}"
-            thumbnail_url = f"{public_url}/files/{os.path.basename(thumbnail_filename)}"
+    with YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(request.url)
+        video_filename = ydl.prepare_filename(info)
+        thumbnail_filename = os.path.splitext(video_filename)[0] + ".png"
 
         return {
             "status": "success",
-            "video_url": video_url,
-            "thumbnail_url": thumbnail_url,
+            "video_url": f"{public_url}/files/{os.path.basename(video_filename)}",
+            "thumbnail_url": f"{public_url}/files/{os.path.basename(thumbnail_filename)}",
             "filesize": os.path.getsize(video_filename),
         }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/download")
+async def download_video(request: DownloadRequest):
+    return await asyncio.to_thread(process_download, request)
 
 
 if __name__ == "__main__":

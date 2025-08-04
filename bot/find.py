@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 
 SUBNET = "192.168.0."
-TIMEOUT = 0.1
+TIMEOUT = 0.5
 
 
 def check_health(ip):
