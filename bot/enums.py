@@ -64,8 +64,7 @@ class Messages(Enum):
         "• Supporting <b>best quality videos</b>\n"
         "• Offering <b>unlimited storage</b>\n\n"
 
-        "If the API is down, the bot will still try to download the video — but it may be lower quality.\n"
-        "Once the API is back online, the bot will automatically re-download it in best quality."
+        "If the API is offline, no worries — the bot will still send a low-quality version and automatically re-download it in full quality once we’re back."
     )  # fmt: skip
 
     def f(self, **kwargs) -> str:
