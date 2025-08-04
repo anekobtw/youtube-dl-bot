@@ -4,10 +4,10 @@ import os
 import random
 
 import httpx
-import requests
 import yt_dlp
 from aiogram import F, Router, types
 from aiogram.filters import Command, CommandStart
+
 from enums import Links, Messages
 from find import find
 
@@ -68,7 +68,6 @@ async def handle_download(message: types.Message):
             if response["filesize"] < 50 * 1024 * 1024:
                 await message.answer_video(
                     video=types.URLInputFile(response["video_url"]),
-                    cover=types.URLInputFile(response["thumbnail_url"]),
                     caption=Messages.Caption.f(url=message.text),
                 )
             else:
