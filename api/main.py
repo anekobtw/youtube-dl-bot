@@ -32,12 +32,14 @@ def process_download(request: DownloadRequest):
         "outtmpl": "files/%(title)s.%(ext)s",
         "format": (
             "bestvideo[ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/"
-            "best[ext=mp4][vcodec^=avc1]"
+            "best[ext=mp4][vcodec^=avc1]/"
+            "best"
         ),  # fmt: skip
         "merge_output_format": "mp4",
         "writethumbnail": True,
         "postprocessors": [
             # {"key": "FFmpegThumbnailsConvertor", "format": "png"},
+            {"key": "FFmpegThumbnailsConvertor", "format": "png"},
             {"key": "FFmpegFixupStretched"},
         ],
         "postprocessor_args": ["-c:v", "copy", "-c:a", "copy"],
@@ -46,7 +48,7 @@ def process_download(request: DownloadRequest):
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(request.url)
         video_filename = ydl.prepare_filename(info)
-        thumbnail_filename = os.path.splitext(video_filename)[0] + ".webp"
+        thumbnail_filename = os.path.splitext(video_filename)[0] + ".png"
 
         return {
             "status": "success",
