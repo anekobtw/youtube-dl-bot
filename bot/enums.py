@@ -26,12 +26,11 @@ class Links(Enum):
 
 
 class Messages(Enum):
-    API_Finding = "<code>{url}</code>\n\n🟡 Checking if API is working."
-    API_Found = "<code>{url}</code>\n\n🟢 API is working. Preparing your video."
-    API_NotFound = "<code>{url}</code>\n\n🔴  Unfortunately, our API is not working right now. The bot will still try to download your video. Once the API is back online, the bot will re-download it in best quality automatically. Check /api for more info."
+    VideoDownloading = "<code>{url}</code>\n\n🟡 Your video is being processed..."
+    VideoDownloaded = "<code>{url}</code>\n\n🟢 Your video has been successfully downloaded. Sending..."
 
-    VideoDownloaded = "<code>{url}</code>\n\nUnfortunately, the video exceeds Telegram limits. Please, download it from a temporary link below."
-    ErrorOccured = "<code>{url}</code>\n\n⚠️ <b>Something went wrong while processing your request.</b> Please try again later."
+    VideoNotSent = "<code>{url}</code>\n\n🔴 Unfortunately, the video exceeds Telegram limits."
+    ErrorOccured = "<code>{url}</code>\n\n🔴 An error occurred during the download."
 
     Promo = (
         "Hi! I'm <b>@free_yt_dl_bot</b> — 100% free, no ads, no forced subscriptions.\n\n"
@@ -50,21 +49,6 @@ class Messages(Enum):
         "❗ <b>If the bot isn’t working, don’t worry</b> — your request will be processed automatically once we're back online.\n\n"
 
         "🙏 <b>Please don’t block the bot</b> — it needs to message you when the download is ready."
-    )  # fmt: skip
-
-    Api = (
-        "<b>API status:</b> {status}\n\n\n"
-
-        "<b>Why do we need the API?</b>\n\n"
-
-        "Telegram limits bots to 50 MB video uploads. Additionally, our current hosting caps quality at 360p.\n"
-        "Our custom API bypasses this by:\n\n"
-
-        "• Enabling <b>faster downloads</b>\n"
-        "• Supporting <b>best quality videos</b>\n"
-        "• Offering <b>unlimited storage</b>\n\n"
-
-        "If the API is offline, no worries — the bot will still send a low-quality version and automatically re-download it in full quality once we’re back."
     )  # fmt: skip
 
     def f(self, **kwargs) -> str:

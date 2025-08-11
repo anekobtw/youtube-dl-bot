@@ -5,14 +5,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from pyngrok import ngrok
 from yt_dlp import YoutubeDL
 
 os.makedirs("files", exist_ok=True)
 
 app = FastAPI()
-ngrok_tunnel = ngrok.connect(8000)
-public_url = ngrok_tunnel.public_url
 
 
 class DownloadRequest(BaseModel):
