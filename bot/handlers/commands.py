@@ -15,10 +15,8 @@ async def download_video(url: str) -> str:
     opts = {
         "format": "bestvideo[ext=mp4][filesize<45M]+bestaudio[filesize<5M]/worstvideo[ext=mp4]+worstaudio",
         "merge-output-format": "mp4",
-        "recode_video": "mp4",
         "noplaylist": True,
         "quiet": True,
-        "verbose": True,
     }
 
     with yt_dlp.YoutubeDL(opts) as ydl:
