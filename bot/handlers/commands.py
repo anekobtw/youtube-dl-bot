@@ -13,7 +13,7 @@ router = Router()
 
 async def download_video(url: str) -> str:
     opts = {
-        "format": "bestvideo[ext=mp4][filesize<45M]+bestaudio[filesize<5M]/worstvideo[ext=mp4]+worstaudio",
+        "format": "bv*+ba/b",
         "merge-output-format": "mp4",
         "noplaylist": True,
         "quiet": True,
