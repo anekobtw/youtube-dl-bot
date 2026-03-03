@@ -57,7 +57,7 @@ async def handle_standart_download(message: types.Message):
     except Exception:
         await msg.edit_text(VideoStatusMessages.ErrorOccured.value.format(url=url))
         return
-    
+
     else:
         await message.delete()
         await msg.delete()
@@ -65,8 +65,10 @@ async def handle_standart_download(message: types.Message):
     finally:
         os.remove(info["filename"])
 
+
 @router.message(CommandStart())
 async def start(message: types.Message) -> None:
+    # fmt: off
     await message.answer(
         text=f"Hello, @{message.from_user.username}! Just send the link to the video.\n\n"\
         "ℹ️ <b>We don’t collect any data.</b>\n\n"\
