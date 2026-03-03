@@ -15,5 +15,5 @@ RUN poetry install --no-root
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-WORKDIR /app/bot
+WORKDIR /app/src
 CMD ["poetry", "run", "python", "main.py"]

@@ -40,7 +40,7 @@ $ poetry install
 6. Run the bot
 
 ```bash
-$ cd bot
+$ cd src
 $ poetry run python main.py
 ```
 
