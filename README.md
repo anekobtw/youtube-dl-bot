@@ -33,6 +33,7 @@ TOKEN=your_telegram_bot_token_here
 5. Clone and install dependencies:
 
 ```bash
+$ pip install poetry
 $ git clone https://github.com/anekobtw/youtube-dl-bot.git
 $ poetry install
 ```
