@@ -1,45 +1,53 @@
 # `youtube-dl-bot`
 
-![version](https://img.shields.io/badge/Version-3.7.0-blue)
+![version](https://img.shields.io/badge/Version-3.8.0-blue)
 ![license](https://img.shields.io/badge/License-CC-red)
-![python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![python](https://img.shields.io/badge/Python-3.10%2B-blue)
 
 A Telegram bot for downloading videos from different platforms directly in your chats.
 
 **Live Bot**: [@free_yt_dl_bot](https://t.me/free_yt_dl_bot)
 
-## 🛠️ Setup
+## Setup
 
-**1. Install Python**
+### Docker (Recommended)
+```
+$ docker build -t youtube-dl-bot .
+$ docker run -d --name youtube-dl-bot-container -e TOKEN=your_telegram_bot_token_here youtube-dl-bot
+```
 
-**2. Install [ffmpeg](https://ffmpeg.org/download.html)**
+### Manual
 
-**3. Acquire bot token from [@BotFather](https://t.me/BotFather)**
+1. Install Python
 
-**4. Create a `.env` file in `bot/` folder with:**
+2. Install [ffmpeg](https://ffmpeg.org/download.html)
+
+3. Acquire bot token from [@BotFather](https://t.me/BotFather)
+
+4. Create a `.env` file with:
 
 ```
-TOKEN = your_telegram_bot_token_here
+TOKEN=your_telegram_bot_token_here
 ``` 
 
-**5. Clone and install dependencies:**
+5. Clone and install dependencies:
 
 ```bash
 $ git clone https://github.com/anekobtw/youtube-dl-bot.git
-$ cd youtube-dl-bot/bot
-$ pip install -r requirements.txt
+$ poetry install
 ```
 
-**6. Run the bot**
+6. Run the bot
 
 ```bash
-$ python main.py
+$ cd bot
+$ poetry run python main.py
 ```
 
-## Contributing 🤝
+## Contributing
 Pull requests, bug reports, and feature suggestions are welcome! Please read our [Code of Conduct](https://github.com/anekobtw/youtube-dl-bot/blob/main/CODE_OF_CONDUCT.md)
 
-## License 📄
-©️ All rights reserved by [@anekobtw](https://github.com/anekobtw). Unauthorized copying or redistribution is prohibited.
+## License
+The project is under MIT licence.
 
 > // Maintained with ❤️ by [@anekobtw](https://github.com/anekobtw)

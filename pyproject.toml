@@ -1,0 +1,20 @@
+[project]
+name = "youtube-dl-bot"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "anekobtw",email = "krolexonder@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+dependencies = [
+    "aiogram (>=3.26.0)",
+    "python-dotenv (>=1.1.1)",
+    "yt-dlp (>=2025.9.23)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

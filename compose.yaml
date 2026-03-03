@@ -1,0 +1,6 @@
+services:
+  youtubedlbot:
+    image: youtubedlbot
+    build:
+      context: .
+      dockerfile: ./Dockerfile

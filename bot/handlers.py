@@ -1,11 +1,9 @@
-import asyncio
 import os
-import random
 
 import yt_dlp
 from aiogram import F, Router, exceptions, types
 from aiogram.filters import CommandStart
-from enums import Links, Messages
+from enums import Links, VideoStatusMessages
 
 router = Router()
 
@@ -34,51 +32,44 @@ async def download_video(url: str) -> str:
         }
 
 
-def link_button(text: str, url: str) -> types.InlineKeyboardMarkup:
-    return types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(text=text, url=url)]])
-
-
 @router.message(F.text.startswith(tuple(Links.STANDART.value)))
 async def handle_standart_download(message: types.Message):
     url = message.text
-    eyes_emoji = [types.reaction_type_emoji.ReactionTypeEmoji(emoji="👀")]
-
-    await message.react(eyes_emoji)
-    msg = await message.answer(Messages.VideoProcessing.value.format(url=url))
+    await message.react([types.reaction_type_emoji.ReactionTypeEmoji(emoji="👀")])
+    msg = await message.answer(VideoStatusMessages.VideoProcessing.value.format(url=url))
 
     try:
         info = await download_video(url)
 
-        await msg.edit_text(Messages.VideoSuccess.value.format(url=url))
+        await msg.edit_text(VideoStatusMessages.VideoSuccess.value.format(url=url))
 
         await message.answer_video(
             video=types.FSInputFile(info["filename"]),
-            caption=Messages.Caption.value.format(url=url),
+            caption=f"<b><i><a href='https://t.me/free_yt_dl_bot'>via</a> | <a href='{url}'>link</a></i></b>",
             width=info["width"],
             height=info["height"],
         )
 
     except exceptions.TelegramEntityTooLarge:
-        await msg.edit_text(Messages.VideoNotSent.value.format(url=url))
+        await msg.edit_text(VideoStatusMessages.VideoNotSent.value.format(url=url))
         return
 
     except Exception:
-        await msg.edit_text(Messages.ErrorOccured.value.format(url=url))
+        await msg.edit_text(VideoStatusMessages.ErrorOccured.value.format(url=url))
         return
+    
+    else:
+        await message.delete()
+        await msg.delete()
 
-    await message.delete()
-    await msg.delete()
-    os.remove(info["filename"])
-
-    if random.randint(1, 5) == 1:
-        promo_msg = await message.answer(Messages.Promo.value)
-        await asyncio.sleep(15)
-        await promo_msg.delete()
-
+    finally:
+        os.remove(info["filename"])
 
 @router.message(CommandStart())
 async def start(message: types.Message) -> None:
     await message.answer(
-        text=Messages.Start.format(username=message.from_user.username),
-        reply_markup=link_button("📰 A Telegram channel with news", "t.me/anekobtw_c"),
+        text=f"Hello, @{message.from_user.username}! Just send the link to the video.\n\n"\
+        "ℹ️ <b>We don’t collect any data.</b>\n\n"\
+        "❗ <b>If the bot isn’t working, don’t worry</b> — your request will be processed automatically once we're back online.\n\n"\
+        "🙏 <b>Please don’t block the bot</b> — it needs to message you when the download is ready.",
     )
