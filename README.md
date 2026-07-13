@@ -10,9 +10,11 @@ A Telegram bot for downloading videos from different platforms directly in your 
 
 1. Create `.env` file with:
 
+```
 BOT_TOKEN=your_bot_token
 FILES_URL=vps_endpoint_for_files
 ADMIN_ID=your_telegram_id
+```
 
 2. Run docker
 
