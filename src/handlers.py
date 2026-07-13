@@ -114,8 +114,6 @@ async def start(message: types.Message):
     await message.answer(
         f"Hello, @{message.from_user.username}! Just send the link to the video.\n\n"
         "ℹ️ <b>We don't collect any data.</b>\n\n"
-        "❗ <b>If the bot isn't working, don't worry</b> — "
-        "your request will be processed automatically once we're back online.\n\n"
         "🙏 <b>Please don't block the bot</b> — "
         "it needs to message you when the download is ready.",
     )
