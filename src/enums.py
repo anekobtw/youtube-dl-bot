@@ -28,5 +28,18 @@ class Links(Enum):
 class VideoStatusMessages(Enum):
     VideoProcessing = "<code>{url}</code>\n\n⏳ Your video is being processed..."
     VideoSuccess = "<code>{url}</code>\n\n✅ Your video has been successfully downloaded. Sending..."
-    VideoNotSent = "<code>{url}</code>\n\n❌ Unfortunately, the video exceeds Telegram limits."
+    VideoHostRedirect = (
+        "⚠️ The video is too large to send through Telegram.\n"
+        "We're temporarily hosting it on our servers. Please save it locally if you need it later.\n\n"
+        "{download_url}\n\n"
+        "<b><i>downloaded via @free_yt_dl_bot</i></b>"
+    )
     VideoError = "<code>{url}</code>\n\n⚠️ An error occurred during the download."
+    Caption = "<b><i><a href='https://t.me/free_yt_dl_bot'>via</a> | <a href='{url}'>link</a></i></b>"
+
+
+class ProgressState(Enum):
+    PREPARING = "Preparing"
+    VIDEO_DOWNLOADING = "Downloading video"
+    AUDIO_DOWNLOADING = "Downloading audio"
+    FINALIZING = "Finalizing"

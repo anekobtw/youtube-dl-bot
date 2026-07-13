@@ -1,0 +1,18 @@
+services:
+  youtubedlbot:
+    image: youtubedlbot
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./videos:/app/src/videos
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - ./videos:/usr/share/nginx/html/files:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
